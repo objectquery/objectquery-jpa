@@ -15,11 +15,21 @@ public class JPQLObjectQuery<T> extends AbstractObjectQuery<T> {
 	}
 
 	public Object execute(EntityManager entityManager) {
-		Query qu = entityManager.createQuery(((JPQLQueryBuilder) getBuilder()).buildQuery());
+		Query qu = entityManager.createQuery(getQuery());
 		Map<String, Object> pars = ((JPQLQueryBuilder) getBuilder()).getParamenters();
 		for (Map.Entry<String, Object> ent : pars.entrySet()) {
 			qu.setParameter(ent.getKey(), ent.getValue());
 		}
 		return qu.getResultList();
 	}
+
+	@Override
+	public JPQLQueryBuilder getBuilder() {
+		return (JPQLQueryBuilder) super.getBuilder();
+	}
+
+	public String getQuery() {
+		return getBuilder().buildQuery(getTargetClass());
+	}
+
 }
