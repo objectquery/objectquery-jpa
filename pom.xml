@@ -9,9 +9,18 @@
 
 	<name>jpaobjectquery</name>
 	<url>http://www.objectquery.org</url>
-
+	<repositories>
+		<repository>
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java.net Repository for Maven</name>
+			<url>http://download.java.net/maven/2/</url>
+			<layout>default</layout>
+		</repository>
+	</repositories>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.5</maven.compiler.source>
+		<maven.compiler.target>1.5</maven.compiler.target>
 	</properties>
 
 	<dependencies>
@@ -27,13 +36,15 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.persistence</groupId>
-			<artifactId>persistence-api</artifactId>
-			<version>1.0.2</version>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
+			<version>1.0.0.Final</version>
+			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
+			<artifactId>hibernate-entitymanager</artifactId>
 			<version>4.1.6.Final</version>
 			<scope>test</scope>
 		</dependency>
@@ -44,8 +55,11 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
 	<scm>
 		<url>https://github.com/objectquery/jpaobjectquery</url>
 		<connection>git@github.com:objectquery/jpaobjectquery.git</connection>
 	</scm>
 </project>
+
+	
