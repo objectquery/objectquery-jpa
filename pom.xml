@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 
 	<name>jpaobjectquery</name>
-	<url>http://maven.apache.org</url>
+	<url>http://www.objectquery.org</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -31,5 +31,21 @@
 			<artifactId>persistence-api</artifactId>
 			<version>1.0.2</version>
 		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>4.1.6.Final</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>2.2.8</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+	<scm>
+		<url>https://github.com/objectquery/jpaobjectquery</url>
+		<connection>git@github.com:objectquery/jpaobjectquery.git</connection>
+	</scm>
 </project>
