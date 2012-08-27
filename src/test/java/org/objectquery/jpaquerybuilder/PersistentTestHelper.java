@@ -4,21 +4,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
 import org.objectquery.jpaquerybuilder.domain.Dog;
 import org.objectquery.jpaquerybuilder.domain.Home;
 import org.objectquery.jpaquerybuilder.domain.Home.HomeType;
 import org.objectquery.jpaquerybuilder.domain.Person;
 
-@RunWith(Suite.class)
-@SuiteClasses(TestPersistentSelect.class)
-public class TestPersistentSuite {
+public class PersistentTestHelper {
 
-	static EntityManagerFactory entityManagerFactory;
+	private static EntityManagerFactory entityManagerFactory;
 
 	private static void initData() {
 		EntityManager entityManager;
@@ -75,17 +68,18 @@ public class TestPersistentSuite {
 
 	}
 
-	@BeforeClass
-	public static void startup() {
-		entityManagerFactory = Persistence.createEntityManagerFactory("test");
-		initData();
-	}
-
-	@AfterClass
-	public static void shutdown() {
-		if (entityManagerFactory != null)
-			entityManagerFactory.close();
-		entityManagerFactory = null;
+	public static EntityManagerFactory getFactory() {
+		if (entityManagerFactory == null) {
+			entityManagerFactory = Persistence.createEntityManagerFactory("test");
+			initData();
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				@Override
+				public void run() {
+					entityManagerFactory.close();
+				}
+			});
+		}
+		return entityManagerFactory;
 	}
 
 }

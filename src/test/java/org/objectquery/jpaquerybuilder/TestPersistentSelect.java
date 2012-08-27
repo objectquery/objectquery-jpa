@@ -16,18 +16,13 @@ public class TestPersistentSelect {
 
 	@Before
 	public void beforeTest() {
-		if (TestPersistentSuite.entityManagerFactory != null) {
-			entityManager = TestPersistentSuite.entityManagerFactory.createEntityManager();
-			entityManager.getTransaction().begin();
-		}
+		entityManager = PersistentTestHelper.getFactory().createEntityManager();
+		entityManager.getTransaction().begin();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSimpleSelect() {
-		if (entityManager == null) {
-			return;
-		}
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
 		qp.condition(target.getName(), ConditionType.EQUALS, "tom");
@@ -35,6 +30,25 @@ public class TestPersistentSelect {
 		List<Person> res = qp.execute(entityManager);
 		Assert.assertEquals(1, res.size());
 		Assert.assertEquals(res.get(0).getName(), "tom");
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSimpleSelectWithutCond() {
+		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
+		List<Person> res = qp.execute(entityManager);
+		Assert.assertEquals(3, res.size());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSelectPathValue() {
+		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
+		Person target = qp.target();
+		qp.condition(target.getDud().getHome(), ConditionType.EQUALS, target.getMum().getHome());
+		List<Person> res = qp.execute(entityManager);
+		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(res.get(0).getDud().getHome(), res.get(0).getMum().getHome());
 	}
 
 	@After
