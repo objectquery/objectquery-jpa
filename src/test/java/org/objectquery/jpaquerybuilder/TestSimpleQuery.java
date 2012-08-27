@@ -14,7 +14,7 @@ public class TestSimpleQuery {
 		Person target = qp.target();
 		qp.condition(target.getName(), ConditionType.EQUALS, "tom");
 
-		Assert.assertEquals("select  from org.objectquery.jpaquerybuilder.domain.Person where name  =  :name", qp.getQuery());
+		Assert.assertEquals("select a from org.objectquery.jpaquerybuilder.domain.Person a where name  =  :name", qp.getQuery());
 
 	}
 
@@ -26,7 +26,7 @@ public class TestSimpleQuery {
 		qp.condition(target.getName(), ConditionType.EQUALS, "tom");
 		qp.condition(target.getName(), ConditionType.EQUALS, "tom3");
 
-		Assert.assertEquals("select  from org.objectquery.jpaquerybuilder.domain.Person where name  =  :name AND name  =  :name1", qp.getQuery());
+		Assert.assertEquals("select a from org.objectquery.jpaquerybuilder.domain.Person a where name  =  :name AND name  =  :name1", qp.getQuery());
 
 	}
 
@@ -38,7 +38,7 @@ public class TestSimpleQuery {
 		qp.condition(target.getDog().getName(), ConditionType.EQUALS, "tom");
 		qp.condition(target.getDud().getName(), ConditionType.EQUALS, "tom3");
 
-		Assert.assertEquals("select  from org.objectquery.jpaquerybuilder.domain.Person where dog.name  =  :dog_name AND dud.name  =  :dud_name", qp.getQuery());
+		Assert.assertEquals("select a from org.objectquery.jpaquerybuilder.domain.Person a where dog.name  =  :dog_name AND dud.name  =  :dud_name", qp.getQuery());
 
 	}
 

@@ -1,5 +1,6 @@
 package org.objectquery.jpaquerybuilder;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -14,7 +15,8 @@ public class JPQLObjectQuery<T> extends AbstractObjectQuery<T> {
 		super(new JPQLQueryBuilder(GroupType.AND), clazz);
 	}
 
-	public Object execute(EntityManager entityManager) {
+	@SuppressWarnings("rawtypes")
+	public List execute(EntityManager entityManager) {
 		Query qu = entityManager.createQuery(getQuery());
 		Map<String, Object> pars = ((JPQLQueryBuilder) getBuilder()).getParamenters();
 		for (Map.Entry<String, Object> ent : pars.entrySet()) {

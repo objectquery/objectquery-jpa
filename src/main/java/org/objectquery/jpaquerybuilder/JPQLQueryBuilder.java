@@ -102,25 +102,28 @@ public class JPQLQueryBuilder extends AbstractInternalQueryBuilder {
 		parameters.clear();
 		StringBuilder builder = new StringBuilder();
 		builder.append("select ");
-		Iterator<Projection> projections = getProjections().iterator();
-		while (projections.hasNext()) {
-			Projection proj = projections.next();
-			if (proj.getType() != null)
-				builder.append(" ").append(resolveFunction(proj.getType())).append("(");
+		if (!getProjections().isEmpty()) {
+			Iterator<Projection> projections = getProjections().iterator();
+			while (projections.hasNext()) {
+				Projection proj = projections.next();
+				if (proj.getType() != null)
+					builder.append(" ").append(resolveFunction(proj.getType())).append("(");
 
-			buildPath(proj.getItem(), builder);
-			if (proj.getType() != null)
-				builder.append(")");
-			if (projections.hasNext())
-				builder.append(",");
-		}
-		builder.append(" from ").append(clazz.getName());
+				buildPath(proj.getItem(), builder);
+				if (proj.getType() != null)
+					builder.append(")");
+				if (projections.hasNext())
+					builder.append(",");
+			}
+		} else
+			builder.append("a");
+		builder.append(" from ").append(clazz.getName()).append(" a");
 		if (!this.getConditions().isEmpty()) {
 			builder.append(" where ");
 			stringfyGroup(this, builder);
 		}
 		if (!getOrders().isEmpty()) {
-			builder.append("order by ");
+			builder.append(" order by ");
 			Iterator<Order> orders = getOrders().iterator();
 			while (orders.hasNext()) {
 				Order ord = orders.next();
@@ -139,7 +142,7 @@ public class JPQLQueryBuilder extends AbstractInternalQueryBuilder {
 	}
 
 	public Map<String, Object> getParamenters() {
-		return null;
+		return parameters;
 	}
 
 }
