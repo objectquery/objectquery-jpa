@@ -72,12 +72,20 @@ public class JPQLQueryBuilder extends AbstractInternalQueryBuilder {
 		return "";
 	}
 
+	private void buildName(PathItem item, StringBuilder sb) {
+		sb.append("A");
+		if (item.getParent() != null)
+			sb.append(".");
+		buildPath(item, sb);
+	}
+
 	private void stringfyCondition(ConditionItem cond, StringBuilder sb) {
-		buildPath(cond.getItem(), sb);
+
+		buildName(cond.getItem(), sb);
 		sb.append(" ").append(getConditionType(cond.getType())).append(" ");
-		if (cond.getValue() instanceof PathItem)
-			buildPath((PathItem) cond.getValue(), sb);
-		else {
+		if (cond.getValue() instanceof PathItem) {
+			buildName((PathItem) cond.getValue(), sb);
+		} else {
 			sb.append(":");
 			StringBuilder name = new StringBuilder();
 			buildParameterName(cond, name);
@@ -95,7 +103,17 @@ public class JPQLQueryBuilder extends AbstractInternalQueryBuilder {
 	}
 
 	private String resolveFunction(ProjectionType projectionType) {
-		return "nada";
+		switch (projectionType) {
+		case AVG:
+			return "AVG";
+		case MAX:
+			return "MAX";
+		case MIN:
+			return "MIN";
+		case COUNT:
+			return "COUNT";
+		}
+		return "";
 	}
 
 	public String buildQuery(Class<?> clazz) {
@@ -108,16 +126,15 @@ public class JPQLQueryBuilder extends AbstractInternalQueryBuilder {
 				Projection proj = projections.next();
 				if (proj.getType() != null)
 					builder.append(" ").append(resolveFunction(proj.getType())).append("(");
-
-				buildPath(proj.getItem(), builder);
+				buildName(proj.getItem(), builder);
 				if (proj.getType() != null)
 					builder.append(")");
 				if (projections.hasNext())
 					builder.append(",");
 			}
 		} else
-			builder.append("a");
-		builder.append(" from ").append(clazz.getName()).append(" a");
+			builder.append("A");
+		builder.append(" from ").append(clazz.getName()).append(" A");
 		if (!this.getConditions().isEmpty()) {
 			builder.append(" where ");
 			stringfyGroup(this, builder);
@@ -127,7 +144,7 @@ public class JPQLQueryBuilder extends AbstractInternalQueryBuilder {
 			Iterator<Order> orders = getOrders().iterator();
 			while (orders.hasNext()) {
 				Order ord = orders.next();
-				buildPath(ord.getItem(), builder);
+				buildName(ord.getItem(), builder);
 				if (ord.getType() != null)
 					builder.append(" ").append(ord.getType());
 				if (orders.hasNext())

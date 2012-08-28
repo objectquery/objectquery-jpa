@@ -9,6 +9,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.objectquery.builder.ConditionType;
+import org.objectquery.builder.OrderType;
+import org.objectquery.builder.ProjectionType;
+import org.objectquery.jpaquerybuilder.domain.Home;
 import org.objectquery.jpaquerybuilder.domain.Person;
 
 public class TestPersistentSelect {
@@ -51,6 +54,61 @@ public class TestPersistentSelect {
 		Assert.assertEquals(res.get(0).getDud().getHome(), res.get(0).getMum().getHome());
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSelectCountThis() {
+		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
+		Person target = qp.target();
+		qp.projection(target, ProjectionType.COUNT);
+		List<Object> res = qp.execute(entityManager);
+		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(3L, res.get(0));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSelectPrjection() {
+		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
+		Person target = qp.target();
+		qp.projection(target.getName());
+		qp.projection(target.getHome());
+		qp.condition(target.getName(), ConditionType.EQUALS, "tom");
+		List<Object[]> res = qp.execute(entityManager);
+		Assert.assertEquals(1, res.size());
+		Assert.assertEquals("tom", res.get(0)[0]);
+		Assert.assertEquals("homeless", ((Home) res.get(0)[1]).getAddress());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSelectOrder() {
+		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
+		Person target = qp.target();
+		qp.projection(target.getName());
+		qp.order(target.getName());
+		List<Object[]> res = qp.execute(entityManager);
+		Assert.assertEquals(3, res.size());
+		Assert.assertEquals("tom", res.get(0));
+		Assert.assertEquals("tomdud", res.get(1));
+		Assert.assertEquals("tommum", res.get(2));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSelectOrderDesc() {
+		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
+		Person target = qp.target();
+		qp.projection(target.getName());
+		qp.order(target.getName(),OrderType.DESC);
+		List<Object[]> res = qp.execute(entityManager);
+		Assert.assertEquals(3, res.size());
+		Assert.assertEquals("tommum", res.get(0));
+		Assert.assertEquals("tomdud", res.get(1));
+		Assert.assertEquals("tom", res.get(2));
+	}
+
+	
+	
 	@After
 	public void afterTest() {
 		if (entityManager != null) {

@@ -35,7 +35,7 @@ public class PersistentTestHelper {
 		dudHome = entityManager.merge(dudHome);
 
 		Person tomDud = new Person();
-		tomDud.setName("tomdad");
+		tomDud.setName("tomdud");
 		tomDud.setHome(dudHome);
 		tomDud = entityManager.merge(tomDud);
 
