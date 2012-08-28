@@ -17,7 +17,7 @@ public class TestSimpleQuery {
 
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.condition(target.getName(), ConditionType.EQUALS, "tom");
+		qp.eq(target.getName(), "tom");
 
 		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.name  =  :name", qp.getQuery());
 
@@ -28,8 +28,8 @@ public class TestSimpleQuery {
 
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.condition(target.getName(), ConditionType.EQUALS, "tom");
-		qp.condition(target.getName(), ConditionType.EQUALS, "tom3");
+		qp.eq(target.getName(), "tom");
+		qp.eq(target.getName(), "tom3");
 
 		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.name  =  :name AND A.name  =  :name1", qp.getQuery());
 
@@ -40,8 +40,8 @@ public class TestSimpleQuery {
 
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.condition(target.getDog().getName(), ConditionType.EQUALS, "tom");
-		qp.condition(target.getDud().getName(), ConditionType.EQUALS, "tom3");
+		qp.eq(target.getDog().getName(), "tom");
+		qp.eq(target.getDud().getName(), "tom3");
 
 		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name AND A.dud.name  =  :dud_name",
 				qp.getQuery());
@@ -53,8 +53,8 @@ public class TestSimpleQuery {
 
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.projection(target.getName());
-		qp.condition(target.getDog().getName(), ConditionType.EQUALS, "tom");
+		qp.prj(target.getName());
+		qp.eq(target.getDog().getName(), "tom");
 
 		Assert.assertEquals("select A.name from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name", qp.getQuery());
 
@@ -65,8 +65,8 @@ public class TestSimpleQuery {
 
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.projection(target, ProjectionType.COUNT);
-		qp.condition(target.getDog().getName(), ConditionType.EQUALS, "tom");
+		qp.prj(target, ProjectionType.COUNT);
+		qp.eq(target.getDog().getName(), "tom");
 
 		Assert.assertEquals("select  COUNT(A) from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name", qp.getQuery());
 
@@ -77,7 +77,7 @@ public class TestSimpleQuery {
 
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.condition(target.getDog().getName(), ConditionType.EQUALS, "tom");
+		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName());
 
 		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name order by A.name", qp.getQuery());
@@ -89,7 +89,7 @@ public class TestSimpleQuery {
 
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.condition(target.getDog().getName(), ConditionType.EQUALS, "tom");
+		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName(), OrderType.ASC);
 
 		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name order by A.name ASC", qp.getQuery());
@@ -101,7 +101,7 @@ public class TestSimpleQuery {
 
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.condition(target.getDog().getName(), ConditionType.EQUALS, "tom");
+		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName(), OrderType.DESC);
 		qp.order(target.getDog().getName(), OrderType.DESC);
 
@@ -116,13 +116,13 @@ public class TestSimpleQuery {
 
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.condition(target.getName(), ConditionType.EQUALS, "tom");
-		qp.condition(target.getName(), ConditionType.LIKE, "tom");
-		qp.condition(target.getName(), ConditionType.MAX, "tom");
-		qp.condition(target.getName(), ConditionType.MIN, "tom");
-		qp.condition(target.getName(), ConditionType.MAX_EQUALS, "tom");
-		qp.condition(target.getName(), ConditionType.MIN_EQUALS, "tom");
-		qp.condition(target.getName(), ConditionType.NOT_EQUALS, "tom");
+		qp.eq(target.getName(), "tom");
+		qp.like(target.getName(), "tom");
+		qp.max(target.getName(), "tom");
+		qp.min(target.getName(), "tom");
+		qp.maxEq(target.getName(), "tom");
+		qp.minEq(target.getName(), "tom");
+		qp.notEq(target.getName(), "tom");
 
 		Assert.assertEquals(
 				"select A from org.objectquery.jpaquerybuilder.domain.Person A where A.name  =  :name AND A.name  like  :name1 AND A.name  >  :name2 AND A.name  <  :name3 AND A.name  >=  :name4 AND A.name  <=  :name5 AND A.name  <>  :name6",

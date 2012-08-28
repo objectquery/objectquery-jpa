@@ -28,7 +28,7 @@ public class TestPersistentSelect {
 	public void testSimpleSelect() {
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.condition(target.getName(), ConditionType.EQUALS, "tom");
+		qp.eq(target.getName(), "tom");
 
 		List<Person> res = qp.execute(entityManager);
 		Assert.assertEquals(1, res.size());
@@ -48,7 +48,7 @@ public class TestPersistentSelect {
 	public void testSelectPathValue() {
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.condition(target.getDud().getHome(), ConditionType.EQUALS, target.getMum().getHome());
+		qp.eq(target.getDud().getHome(), target.getMum().getHome());
 		List<Person> res = qp.execute(entityManager);
 		Assert.assertEquals(1, res.size());
 		Assert.assertEquals(res.get(0).getDud().getHome(), res.get(0).getMum().getHome());
@@ -59,7 +59,7 @@ public class TestPersistentSelect {
 	public void testSelectCountThis() {
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.projection(target, ProjectionType.COUNT);
+		qp.prj(target, ProjectionType.COUNT);
 		List<Object> res = qp.execute(entityManager);
 		Assert.assertEquals(1, res.size());
 		Assert.assertEquals(3L, res.get(0));
@@ -70,9 +70,9 @@ public class TestPersistentSelect {
 	public void testSelectPrjection() {
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.projection(target.getName());
-		qp.projection(target.getHome());
-		qp.condition(target.getName(), ConditionType.EQUALS, "tom");
+		qp.prj(target.getName());
+		qp.prj(target.getHome());
+		qp.eq(target.getName(), "tom");
 		List<Object[]> res = qp.execute(entityManager);
 		Assert.assertEquals(1, res.size());
 		Assert.assertEquals("tom", res.get(0)[0]);
@@ -84,7 +84,7 @@ public class TestPersistentSelect {
 	public void testSelectOrder() {
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.projection(target.getName());
+		qp.prj(target.getName());
 		qp.order(target.getName());
 		List<Object[]> res = qp.execute(entityManager);
 		Assert.assertEquals(3, res.size());
@@ -98,8 +98,8 @@ public class TestPersistentSelect {
 	public void testSelectOrderDesc() {
 		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		qp.projection(target.getName());
-		qp.order(target.getName(),OrderType.DESC);
+		qp.prj(target.getName());
+		qp.order(target.getName(), OrderType.DESC);
 		List<Object[]> res = qp.execute(entityManager);
 		Assert.assertEquals(3, res.size());
 		Assert.assertEquals("tommum", res.get(0));
@@ -107,8 +107,6 @@ public class TestPersistentSelect {
 		Assert.assertEquals("tom", res.get(2));
 	}
 
-	
-	
 	@After
 	public void afterTest() {
 		if (entityManager != null) {
