@@ -1,5 +1,6 @@
 package org.objectquery.jpaquerybuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -8,7 +9,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.objectquery.builder.ConditionType;
 import org.objectquery.builder.OrderType;
 import org.objectquery.builder.ProjectionType;
 import org.objectquery.jpaquerybuilder.domain.Home;
@@ -105,6 +105,64 @@ public class TestPersistentSelect {
 		Assert.assertEquals("tommum", res.get(0));
 		Assert.assertEquals("tomdud", res.get(1));
 		Assert.assertEquals("tom", res.get(2));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSelectSimpleConditions() {
+
+		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
+		Person target = qp.target();
+		qp.eq(target.getName(), "tom");
+		qp.like(target.getName(), "tom");
+		qp.max(target.getName(), "tom");
+		qp.min(target.getName(), "tom");
+		qp.maxEq(target.getName(), "tom");
+		qp.minEq(target.getName(), "tom");
+		qp.notEq(target.getName(), "tom");
+		List<Object[]> res = qp.execute(entityManager);
+		Assert.assertEquals(0, res.size());
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSelectINCondition() {
+
+		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
+		Person target = qp.target();
+		JPQLObjectQuery<Person> qp0 = new JPQLObjectQuery<Person>(Person.class);
+		Person target0 = qp0.target();
+		qp0.eq(target0.getName(), "tom");
+
+		List<String> pars = new ArrayList<String>();
+		pars.add("tommy");
+		qp.in(target.getName(), pars);
+		qp.notIn(target.getName(), pars);
+
+		List<Object[]> res = qp.execute(entityManager);
+		Assert.assertEquals(0, res.size());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSelectContainsCondition() {
+
+		JPQLObjectQuery<Person> qp0 = new JPQLObjectQuery<Person>(Person.class);
+		Person target0 = qp0.target();
+		qp0.eq(target0.getName(), "tom");
+
+		List<Person> res0 = qp0.execute(entityManager);
+		Assert.assertEquals(1, res0.size());
+		Person p = res0.get(0);
+
+		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
+		Person target = qp.target();
+		qp.contains(target.getFriends(), p);
+		qp.notContains(target.getFriends(), p);
+
+		List<Object[]> res = qp.execute(entityManager);
+		Assert.assertEquals(0, res.size());
 	}
 
 	@After

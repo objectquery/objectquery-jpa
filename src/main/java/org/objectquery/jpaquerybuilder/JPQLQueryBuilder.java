@@ -45,7 +45,7 @@ public class JPQLQueryBuilder extends AbstractInternalQueryBuilder {
 	private String getConditionType(ConditionType type) {
 		switch (type) {
 		case CONTAINS:
-			return " contains ";
+			return " member of ";
 		case EQUALS:
 			return " = ";
 		case IN:
@@ -61,7 +61,7 @@ public class JPQLQueryBuilder extends AbstractInternalQueryBuilder {
 		case MIN_EQUALS:
 			return " <= ";
 		case NOT_CONTAINS:
-			return "";
+			return " not member of ";
 		case NOT_EQUALS:
 			return " <> ";
 		case NOT_IN:
@@ -79,26 +79,44 @@ public class JPQLQueryBuilder extends AbstractInternalQueryBuilder {
 		buildPath(item, sb);
 	}
 
+	private String buildParameterName(ConditionItem cond) {
+		StringBuilder name = new StringBuilder();
+		buildParameterName(cond, name);
+		int i = 1;
+		String realName = name.toString();
+		do {
+			if (!parameters.containsKey(realName)) {
+				parameters.put(realName, cond.getValue());
+				return realName;
+			}
+			realName = name.toString() + i++;
+		} while (true);
+	}
+
 	private void stringfyCondition(ConditionItem cond, StringBuilder sb) {
 
-		buildName(cond.getItem(), sb);
-		sb.append(" ").append(getConditionType(cond.getType())).append(" ");
-		if (cond.getValue() instanceof PathItem) {
-			buildName((PathItem) cond.getValue(), sb);
+		if (cond.getType().equals(ConditionType.CONTAINS) || cond.getType().equals(ConditionType.NOT_CONTAINS)) {
+			if (cond.getValue() instanceof PathItem) {
+				buildName((PathItem) cond.getValue(), sb);
+			} else {
+				sb.append(":");
+				sb.append(buildParameterName(cond));
+			}
+			sb.append(" ").append(getConditionType(cond.getType())).append(" ");
+			buildName(cond.getItem(), sb);
 		} else {
-			sb.append(":");
-			StringBuilder name = new StringBuilder();
-			buildParameterName(cond, name);
-			int i = 1;
-			String realName = name.toString();
-			do {
-				if (!parameters.containsKey(realName)) {
-					parameters.put(realName, cond.getValue());
-					sb.append(realName);
-					break;
-				}
-				realName = name.toString() + i++;
-			} while (true);
+			buildName(cond.getItem(), sb);
+			sb.append(" ").append(getConditionType(cond.getType())).append(" ");
+			if (cond.getType().equals(ConditionType.IN) || cond.getType().equals(ConditionType.NOT_IN))
+				sb.append("(");
+			if (cond.getValue() instanceof PathItem) {
+				buildName((PathItem) cond.getValue(), sb);
+			} else {
+				sb.append(":");
+				sb.append(buildParameterName(cond));
+			}
+			if (cond.getType().equals(ConditionType.IN) || cond.getType().equals(ConditionType.NOT_IN))
+				sb.append(")");
 		}
 	}
 

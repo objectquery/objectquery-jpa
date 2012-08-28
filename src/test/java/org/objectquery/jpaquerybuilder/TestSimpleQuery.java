@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.objectquery.builder.ConditionType;
 import org.objectquery.builder.OrderType;
 import org.objectquery.builder.ProjectionType;
 import org.objectquery.jpaquerybuilder.domain.Person;
@@ -126,6 +125,35 @@ public class TestSimpleQuery {
 
 		Assert.assertEquals(
 				"select A from org.objectquery.jpaquerybuilder.domain.Person A where A.name  =  :name AND A.name  like  :name1 AND A.name  >  :name2 AND A.name  <  :name3 AND A.name  >=  :name4 AND A.name  <=  :name5 AND A.name  <>  :name6",
+				qp.getQuery());
+
+	}
+
+	@Test
+	public void testINCondition() {
+
+		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
+		Person target = qp.target();
+		List<String> pars = new ArrayList<String>();
+		qp.in(target.getName(), pars);
+		qp.notIn(target.getName(), pars);
+
+		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.name  in  (:name) AND A.name  not in  (:name1)",
+				qp.getQuery());
+
+	}
+
+	@Test
+	public void testContainsCondition() {
+
+		JPQLObjectQuery<Person> qp = new JPQLObjectQuery<Person>(Person.class);
+		Person target = qp.target();
+		Person p = new Person();
+		qp.contains(target.getFriends(), p);
+		qp.notContains(target.getFriends(), p);
+
+		Assert.assertEquals(
+				"select A from org.objectquery.jpaquerybuilder.domain.Person A where :friends  member of  A.friends AND :friends1  not member of  A.friends",
 				qp.getQuery());
 
 	}
