@@ -175,8 +175,7 @@ public class TestSimpleQuery {
 		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
 		qp.order(target.getAddress());
 
-		Assert.assertEquals(
-				"select A.address, MAX(A.price) from org.objectquery.jpaquerybuilder.domain.Home A group by A.address order by A.address",
+		Assert.assertEquals("select A.address, MAX(A.price) from org.objectquery.jpaquerybuilder.domain.Home A group by A.address order by A.address",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
