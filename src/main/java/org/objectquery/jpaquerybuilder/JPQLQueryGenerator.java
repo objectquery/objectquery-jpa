@@ -4,23 +4,24 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.objectquery.builder.AbstractInternalQueryBuilder;
+import org.objectquery.builder.GenericInternalQueryBuilder;
+import org.objectquery.builder.GenericObjectQuery;
 import org.objectquery.builder.ConditionElement;
 import org.objectquery.builder.ConditionGroup;
 import org.objectquery.builder.ConditionItem;
 import org.objectquery.builder.ConditionType;
-import org.objectquery.builder.GroupType;
 import org.objectquery.builder.Order;
 import org.objectquery.builder.PathItem;
 import org.objectquery.builder.Projection;
 import org.objectquery.builder.ProjectionType;
 
-public class JPQLQueryBuilder extends AbstractInternalQueryBuilder {
+public class JPQLQueryGenerator {
 
 	private Map<String, Object> parameters = new HashMap<String, Object>();
+	private String query;
 
-	protected JPQLQueryBuilder(GroupType type) {
-		super(type);
+	JPQLQueryGenerator(GenericObjectQuery<?> jpqlObjectQuery) {
+		buildQuery(jpqlObjectQuery.getTargetClass(), (GenericInternalQueryBuilder) jpqlObjectQuery.getBuilder());
 	}
 
 	private void stringfyGroup(ConditionGroup group, StringBuilder builder) {
@@ -76,7 +77,7 @@ public class JPQLQueryBuilder extends AbstractInternalQueryBuilder {
 		sb.append("A");
 		if (item.getParent() != null)
 			sb.append(".");
-		buildPath(item, sb);
+		GenericInternalQueryBuilder.buildPath(item, sb);
 	}
 
 	private String buildParameterName(ConditionItem cond) {
@@ -134,12 +135,12 @@ public class JPQLQueryBuilder extends AbstractInternalQueryBuilder {
 		return "";
 	}
 
-	public String buildQuery(Class<?> clazz) {
+	public void buildQuery(Class<?> clazz, GenericInternalQueryBuilder query) {
 		parameters.clear();
 		StringBuilder builder = new StringBuilder();
 		builder.append("select ");
-		if (!getProjections().isEmpty()) {
-			Iterator<Projection> projections = getProjections().iterator();
+		if (!query.getProjections().isEmpty()) {
+			Iterator<Projection> projections = query.getProjections().iterator();
 			while (projections.hasNext()) {
 				Projection proj = projections.next();
 				if (proj.getType() != null)
@@ -153,13 +154,13 @@ public class JPQLQueryBuilder extends AbstractInternalQueryBuilder {
 		} else
 			builder.append("A");
 		builder.append(" from ").append(clazz.getName()).append(" A");
-		if (!this.getConditions().isEmpty()) {
+		if (!query.getConditions().isEmpty()) {
 			builder.append(" where ");
-			stringfyGroup(this, builder);
+			stringfyGroup(query, builder);
 		}
-		if (!getOrders().isEmpty()) {
+		if (!query.getOrders().isEmpty()) {
 			builder.append(" order by ");
-			Iterator<Order> orders = getOrders().iterator();
+			Iterator<Order> orders = query.getOrders().iterator();
 			while (orders.hasNext()) {
 				Order ord = orders.next();
 				buildName(ord.getItem(), builder);
@@ -169,15 +170,18 @@ public class JPQLQueryBuilder extends AbstractInternalQueryBuilder {
 					builder.append(',');
 			}
 		}
-		return builder.toString();
+		this.query = builder.toString();
 	}
 
 	private void buildParameterName(ConditionItem conditionItem, StringBuilder builder) {
-		buildPath(conditionItem.getItem(), builder, "_");
+		GenericInternalQueryBuilder.buildPath(conditionItem.getItem(), builder, "_");
 	}
 
 	public Map<String, Object> getParamenters() {
 		return parameters;
 	}
 
+	public String getQuery() {
+		return query;
+	}
 }
