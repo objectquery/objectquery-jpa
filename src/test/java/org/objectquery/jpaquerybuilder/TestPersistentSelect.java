@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.objectquery.builder.GenericObjectQuery;
+import org.objectquery.builder.ObjectQuery;
 import org.objectquery.builder.OrderType;
 import org.objectquery.builder.ProjectionType;
 import org.objectquery.jpaquerybuilder.domain.Home;
@@ -40,7 +41,7 @@ public class TestPersistentSelect {
 	@Test
 	public void testSimpleSelectWithutCond() {
 		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
-		List<Person> res = JPAObjectQuery.buildQuery(qp,entityManager).getResultList();
+		List<Person> res = JPAObjectQuery.buildQuery(qp, entityManager).getResultList();
 		Assert.assertEquals(3, res.size());
 	}
 
@@ -132,7 +133,7 @@ public class TestPersistentSelect {
 
 		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
 		Person target = qp.target();
-		
+
 		List<String> pars = new ArrayList<String>();
 		pars.add("tommy");
 		qp.in(target.getName(), pars);
@@ -161,6 +162,23 @@ public class TestPersistentSelect {
 
 		List<Object[]> res = JPAObjectQuery.buildQuery(qp, entityManager).getResultList();
 		Assert.assertEquals(0, res.size());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSelectFunctionGrouping() {
+
+		ObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
+		Home target = qp.target();
+		qp.prj(target.getAddress());
+		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
+		qp.order(target.getAddress());
+
+		List<Object[]> res = JPAObjectQuery.buildQuery(qp, entityManager).getResultList();
+		Assert.assertEquals(res.size(), 3);
+		Assert.assertEquals(res.get(0)[1], 0d);
+		Assert.assertEquals(res.get(1)[1], 0d);
+		Assert.assertEquals(res.get(2)[1], 1000000d);
 	}
 
 	@After

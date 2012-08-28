@@ -6,8 +6,10 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.objectquery.builder.GenericObjectQuery;
+import org.objectquery.builder.ObjectQuery;
 import org.objectquery.builder.OrderType;
 import org.objectquery.builder.ProjectionType;
+import org.objectquery.jpaquerybuilder.domain.Home;
 import org.objectquery.jpaquerybuilder.domain.Person;
 
 public class TestSimpleQuery {
@@ -31,7 +33,8 @@ public class TestSimpleQuery {
 		qp.eq(target.getName(), "tom");
 		qp.eq(target.getName(), "tom3");
 
-		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.name  =  :name AND A.name  =  :name1", JPAObjectQuery.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.name  =  :name AND A.name  =  :name1", JPAObjectQuery
+				.jpqlGenerator(qp).getQuery());
 
 	}
 
@@ -56,7 +59,8 @@ public class TestSimpleQuery {
 		qp.prj(target.getName());
 		qp.eq(target.getDog().getName(), "tom");
 
-		Assert.assertEquals("select A.name from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name", JPAObjectQuery.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select A.name from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name",
+				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
 
@@ -68,7 +72,8 @@ public class TestSimpleQuery {
 		qp.prj(target, ProjectionType.COUNT);
 		qp.eq(target.getDog().getName(), "tom");
 
-		Assert.assertEquals("select  COUNT(A) from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name", JPAObjectQuery.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select  COUNT(A) from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name", JPAObjectQuery
+				.jpqlGenerator(qp).getQuery());
 
 	}
 
@@ -80,7 +85,8 @@ public class TestSimpleQuery {
 		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName());
 
-		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name order by A.name", JPAObjectQuery.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name order by A.name", JPAObjectQuery
+				.jpqlGenerator(qp).getQuery());
 
 	}
 
@@ -92,7 +98,8 @@ public class TestSimpleQuery {
 		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName(), OrderType.ASC);
 
-		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name order by A.name ASC", JPAObjectQuery.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name order by A.name ASC", JPAObjectQuery
+				.jpqlGenerator(qp).getQuery());
 
 	}
 
@@ -155,6 +162,21 @@ public class TestSimpleQuery {
 
 		Assert.assertEquals(
 				"select A from org.objectquery.jpaquerybuilder.domain.Person A where :friends  member of  A.friends AND :friends1  not member of  A.friends",
+				JPAObjectQuery.jpqlGenerator(qp).getQuery());
+
+	}
+
+	@Test
+	public void testProjectionGroup() {
+
+		ObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
+		Home target = qp.target();
+		qp.prj(target.getAddress());
+		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
+		qp.order(target.getAddress());
+
+		Assert.assertEquals(
+				"select A.address, MAX(A.price) from org.objectquery.jpaquerybuilder.domain.Home A group by A.address order by A.address",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}

@@ -1,15 +1,17 @@
 package org.objectquery.jpaquerybuilder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import org.objectquery.builder.GenericInternalQueryBuilder;
-import org.objectquery.builder.GenericObjectQuery;
 import org.objectquery.builder.ConditionElement;
 import org.objectquery.builder.ConditionGroup;
 import org.objectquery.builder.ConditionItem;
 import org.objectquery.builder.ConditionType;
+import org.objectquery.builder.GenericInternalQueryBuilder;
+import org.objectquery.builder.GenericObjectQuery;
 import org.objectquery.builder.Order;
 import org.objectquery.builder.PathItem;
 import org.objectquery.builder.Projection;
@@ -137,14 +139,19 @@ public class JPQLQueryGenerator {
 
 	public void buildQuery(Class<?> clazz, GenericInternalQueryBuilder query) {
 		parameters.clear();
+		List<Projection> groupby = new ArrayList<Projection>();
+		boolean grouped = false;
 		StringBuilder builder = new StringBuilder();
 		builder.append("select ");
 		if (!query.getProjections().isEmpty()) {
 			Iterator<Projection> projections = query.getProjections().iterator();
 			while (projections.hasNext()) {
 				Projection proj = projections.next();
-				if (proj.getType() != null)
+				if (proj.getType() != null) {
 					builder.append(" ").append(resolveFunction(proj.getType())).append("(");
+					grouped = true;
+				} else
+					groupby.add(proj);
 				buildName(proj.getItem(), builder);
 				if (proj.getType() != null)
 					builder.append(")");
@@ -158,6 +165,18 @@ public class JPQLQueryGenerator {
 			builder.append(" where ");
 			stringfyGroup(query, builder);
 		}
+		
+		if (grouped && !groupby.isEmpty()) {
+			builder.append(" group by ");
+			Iterator<Projection> projections = groupby.iterator();
+			while (projections.hasNext()) {
+				Projection proj = projections.next();
+				buildName(proj.getItem(), builder);
+				if (projections.hasNext())
+					builder.append(",");
+			}
+		}
+		
 		if (!query.getOrders().isEmpty()) {
 			builder.append(" order by ");
 			Iterator<Order> orders = query.getOrders().iterator();
@@ -170,6 +189,7 @@ public class JPQLQueryGenerator {
 					builder.append(',');
 			}
 		}
+	
 		this.query = builder.toString();
 	}
 
