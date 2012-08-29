@@ -15,7 +15,7 @@ import org.objectquery.jpaquerybuilder.domain.Person;
 public class TestSimpleQuery {
 
 	@Test
-	public void testSelect() {
+	public void testBaseCondition() {
 
 		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
 		Person target = qp.target();
@@ -26,7 +26,7 @@ public class TestSimpleQuery {
 	}
 
 	@Test
-	public void testSelectDupliedPath() {
+	public void testDupliedPath() {
 
 		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
 		Person target = qp.target();
@@ -39,7 +39,7 @@ public class TestSimpleQuery {
 	}
 
 	@Test
-	public void testSelectDottedPath() {
+	public void testDottedPath() {
 
 		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
 		Person target = qp.target();
@@ -52,7 +52,7 @@ public class TestSimpleQuery {
 	}
 
 	@Test
-	public void testSelectProjection() {
+	public void testProjection() {
 
 		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
 		Person target = qp.target();
@@ -91,7 +91,7 @@ public class TestSimpleQuery {
 	}
 
 	@Test
-	public void testSelectOrderAsc() {
+	public void testOrderAsc() {
 
 		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
 		Person target = qp.target();
@@ -104,7 +104,7 @@ public class TestSimpleQuery {
 	}
 
 	@Test
-	public void testSelectOrderDesc() {
+	public void testOrderDesc() {
 
 		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
 		Person target = qp.target();
@@ -114,6 +114,35 @@ public class TestSimpleQuery {
 
 		Assert.assertEquals(
 				"select A from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name order by A.name DESC,A.dog.name DESC",
+				JPAObjectQuery.jpqlGenerator(qp).getQuery());
+
+	}
+
+	@Test
+	public void testOrderGrouping() {
+
+		GenericObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
+		Home target = qp.target();
+		qp.eq(target.getAddress(), "homeless");
+		qp.order(qp.box(target.getPrice()), ProjectionType.COUNT, OrderType.ASC);
+
+		Assert.assertEquals(
+				"select A from org.objectquery.jpaquerybuilder.domain.Home A where A.address  =  :address group by A  order by  COUNT(A.price) ASC",
+				JPAObjectQuery.jpqlGenerator(qp).getQuery());
+
+	}
+
+	@Test
+	public void testOrderGroupingPrj() {
+
+		GenericObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
+		Home target = qp.target();
+		qp.prj(target.getAddress());
+		qp.prj(qp.box(target.getPrice()), ProjectionType.COUNT);
+		qp.order(qp.box(target.getPrice()), ProjectionType.COUNT, OrderType.ASC);
+
+		Assert.assertEquals(
+				"select A.address, COUNT(A.price) from org.objectquery.jpaquerybuilder.domain.Home A group by A.address order by  COUNT(A.price) ASC",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}

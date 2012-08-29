@@ -181,6 +181,39 @@ public class TestPersistentSelect {
 		Assert.assertEquals(res.get(2)[1], 1000000d);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSelectOrderGrouping() {
+
+		GenericObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
+		Home target = qp.target();
+		qp.order(qp.box(target.getPrice()), ProjectionType.MAX, OrderType.ASC);
+
+		List<Home> res = JPAObjectQuery.buildQuery(qp, entityManager).getResultList();
+		Assert.assertEquals(3, res.size());
+		Assert.assertEquals(0d, res.get(0).getPrice(), 0);
+		Assert.assertEquals(0d, res.get(1).getPrice(), 0);
+		Assert.assertEquals(1000000d, res.get(2).getPrice(), 0);
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSelectOrderGroupingPrj() {
+
+		GenericObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
+		Home target = qp.target();
+		qp.prj(target.getAddress());
+		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
+		qp.order(qp.box(target.getPrice()), ProjectionType.MAX, OrderType.DESC);
+
+		List<Object[]> res = JPAObjectQuery.buildQuery(qp, entityManager).getResultList();
+		Assert.assertEquals(3, res.size());
+		Assert.assertEquals((Double) res.get(0)[1], 1000000d, 0);
+		Assert.assertEquals((Double) res.get(1)[1], 0d, 0);
+		Assert.assertEquals((Double) res.get(2)[1], 0d, 0);
+	}
+
 	@After
 	public void afterTest() {
 		if (entityManager != null) {

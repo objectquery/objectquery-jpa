@@ -165,8 +165,15 @@ public class JPQLQueryGenerator {
 			builder.append(" where ");
 			stringfyGroup(query, builder);
 		}
-		
-		if (grouped && !groupby.isEmpty()) {
+		boolean orderGrouped = false;
+		for (Order ord : query.getOrders()) {
+			if (ord.getProjectionType() != null) {
+				orderGrouped = true;
+				break;
+			}
+		}
+
+		if ((orderGrouped || grouped) && !groupby.isEmpty()) {
 			builder.append(" group by ");
 			Iterator<Projection> projections = groupby.iterator();
 			while (projections.hasNext()) {
@@ -175,21 +182,27 @@ public class JPQLQueryGenerator {
 				if (projections.hasNext())
 					builder.append(",");
 			}
+		} else if (orderGrouped && query.getProjections().isEmpty()) {
+			builder.append(" group by A ");
 		}
-		
+
 		if (!query.getOrders().isEmpty()) {
 			builder.append(" order by ");
 			Iterator<Order> orders = query.getOrders().iterator();
 			while (orders.hasNext()) {
 				Order ord = orders.next();
+				if (ord.getProjectionType() != null)
+					builder.append(" ").append(resolveFunction(ord.getProjectionType())).append("(");
 				buildName(ord.getItem(), builder);
+				if (ord.getProjectionType() != null)
+					builder.append(")");
 				if (ord.getType() != null)
 					builder.append(" ").append(ord.getType());
 				if (orders.hasNext())
 					builder.append(',');
 			}
 		}
-	
+
 		this.query = builder.toString();
 	}
 
