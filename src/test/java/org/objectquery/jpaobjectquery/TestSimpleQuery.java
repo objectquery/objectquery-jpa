@@ -1,4 +1,4 @@
-package org.objectquery.jpaquerybuilder;
+package org.objectquery.jpaobjectquery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +9,9 @@ import org.objectquery.builder.GenericObjectQuery;
 import org.objectquery.builder.ObjectQuery;
 import org.objectquery.builder.OrderType;
 import org.objectquery.builder.ProjectionType;
-import org.objectquery.jpaquerybuilder.domain.Home;
-import org.objectquery.jpaquerybuilder.domain.Person;
+import org.objectquery.jpaobjectquery.JPAObjectQuery;
+import org.objectquery.jpaobjectquery.domain.Home;
+import org.objectquery.jpaobjectquery.domain.Person;
 
 public class TestSimpleQuery {
 
@@ -21,7 +22,7 @@ public class TestSimpleQuery {
 		Person target = qp.target();
 		qp.eq(target.getName(), "tom");
 
-		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.name  =  :name", JPAObjectQuery.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select A from org.objectquery.jpaobjectquery.domain.Person A where A.name  =  :name", JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
 
@@ -33,7 +34,7 @@ public class TestSimpleQuery {
 		qp.eq(target.getName(), "tom");
 		qp.eq(target.getName(), "tom3");
 
-		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.name  =  :name AND A.name  =  :name1", JPAObjectQuery
+		Assert.assertEquals("select A from org.objectquery.jpaobjectquery.domain.Person A where A.name  =  :name AND A.name  =  :name1", JPAObjectQuery
 				.jpqlGenerator(qp).getQuery());
 
 	}
@@ -46,7 +47,7 @@ public class TestSimpleQuery {
 		qp.eq(target.getDog().getName(), "tom");
 		qp.eq(target.getDud().getName(), "tom3");
 
-		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name AND A.dud.name  =  :dud_name",
+		Assert.assertEquals("select A from org.objectquery.jpaobjectquery.domain.Person A where A.dog.name  =  :dog_name AND A.dud.name  =  :dud_name",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
@@ -59,7 +60,7 @@ public class TestSimpleQuery {
 		qp.prj(target.getName());
 		qp.eq(target.getDog().getName(), "tom");
 
-		Assert.assertEquals("select A.name from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name",
+		Assert.assertEquals("select A.name from org.objectquery.jpaobjectquery.domain.Person A where A.dog.name  =  :dog_name",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
@@ -72,7 +73,7 @@ public class TestSimpleQuery {
 		qp.prj(target, ProjectionType.COUNT);
 		qp.eq(target.getDog().getName(), "tom");
 
-		Assert.assertEquals("select  COUNT(A) from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name", JPAObjectQuery
+		Assert.assertEquals("select  COUNT(A) from org.objectquery.jpaobjectquery.domain.Person A where A.dog.name  =  :dog_name", JPAObjectQuery
 				.jpqlGenerator(qp).getQuery());
 
 	}
@@ -85,7 +86,7 @@ public class TestSimpleQuery {
 		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName());
 
-		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name order by A.name", JPAObjectQuery
+		Assert.assertEquals("select A from org.objectquery.jpaobjectquery.domain.Person A where A.dog.name  =  :dog_name order by A.name", JPAObjectQuery
 				.jpqlGenerator(qp).getQuery());
 
 	}
@@ -98,7 +99,7 @@ public class TestSimpleQuery {
 		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName(), OrderType.ASC);
 
-		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name order by A.name ASC", JPAObjectQuery
+		Assert.assertEquals("select A from org.objectquery.jpaobjectquery.domain.Person A where A.dog.name  =  :dog_name order by A.name ASC", JPAObjectQuery
 				.jpqlGenerator(qp).getQuery());
 
 	}
@@ -113,7 +114,7 @@ public class TestSimpleQuery {
 		qp.order(target.getDog().getName(), OrderType.DESC);
 
 		Assert.assertEquals(
-				"select A from org.objectquery.jpaquerybuilder.domain.Person A where A.dog.name  =  :dog_name order by A.name DESC,A.dog.name DESC",
+				"select A from org.objectquery.jpaobjectquery.domain.Person A where A.dog.name  =  :dog_name order by A.name DESC,A.dog.name DESC",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
@@ -127,7 +128,7 @@ public class TestSimpleQuery {
 		qp.order(qp.box(target.getPrice()), ProjectionType.COUNT, OrderType.ASC);
 
 		Assert.assertEquals(
-				"select A from org.objectquery.jpaquerybuilder.domain.Home A where A.address  =  :address group by A  order by  COUNT(A.price) ASC",
+				"select A from org.objectquery.jpaobjectquery.domain.Home A where A.address  =  :address group by A  order by  COUNT(A.price) ASC",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
@@ -142,7 +143,7 @@ public class TestSimpleQuery {
 		qp.order(qp.box(target.getPrice()), ProjectionType.COUNT, OrderType.ASC);
 
 		Assert.assertEquals(
-				"select A.address, COUNT(A.price) from org.objectquery.jpaquerybuilder.domain.Home A group by A.address order by  COUNT(A.price) ASC",
+				"select A.address, COUNT(A.price) from org.objectquery.jpaobjectquery.domain.Home A group by A.address order by  COUNT(A.price) ASC",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
@@ -161,7 +162,7 @@ public class TestSimpleQuery {
 		qp.notEq(target.getName(), "tom");
 
 		Assert.assertEquals(
-				"select A from org.objectquery.jpaquerybuilder.domain.Person A where A.name  =  :name AND A.name  like  :name1 AND A.name  >  :name2 AND A.name  <  :name3 AND A.name  >=  :name4 AND A.name  <=  :name5 AND A.name  <>  :name6",
+				"select A from org.objectquery.jpaobjectquery.domain.Person A where A.name  =  :name AND A.name  like  :name1 AND A.name  >  :name2 AND A.name  <  :name3 AND A.name  >=  :name4 AND A.name  <=  :name5 AND A.name  <>  :name6",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
@@ -175,7 +176,7 @@ public class TestSimpleQuery {
 		qp.in(target.getName(), pars);
 		qp.notIn(target.getName(), pars);
 
-		Assert.assertEquals("select A from org.objectquery.jpaquerybuilder.domain.Person A where A.name  in  (:name) AND A.name  not in  (:name1)",
+		Assert.assertEquals("select A from org.objectquery.jpaobjectquery.domain.Person A where A.name  in  (:name) AND A.name  not in  (:name1)",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
@@ -190,7 +191,7 @@ public class TestSimpleQuery {
 		qp.notContains(target.getFriends(), p);
 
 		Assert.assertEquals(
-				"select A from org.objectquery.jpaquerybuilder.domain.Person A where :friends  member of  A.friends AND :friends1  not member of  A.friends",
+				"select A from org.objectquery.jpaobjectquery.domain.Person A where :friends  member of  A.friends AND :friends1  not member of  A.friends",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
@@ -204,7 +205,7 @@ public class TestSimpleQuery {
 		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
 		qp.order(target.getAddress());
 
-		Assert.assertEquals("select A.address, MAX(A.price) from org.objectquery.jpaquerybuilder.domain.Home A group by A.address order by A.address",
+		Assert.assertEquals("select A.address, MAX(A.price) from org.objectquery.jpaobjectquery.domain.Home A group by A.address order by A.address",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}

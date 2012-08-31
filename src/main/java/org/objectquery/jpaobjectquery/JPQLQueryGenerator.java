@@ -1,8 +1,8 @@
-package org.objectquery.jpaquerybuilder;
+package org.objectquery.jpaobjectquery;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +19,7 @@ import org.objectquery.builder.ProjectionType;
 
 public class JPQLQueryGenerator {
 
-	private Map<String, Object> parameters = new HashMap<String, Object>();
+	private Map<String, Object> parameters = new LinkedHashMap<String, Object>();
 	private String query;
 
 	JPQLQueryGenerator(GenericObjectQuery<?> jpqlObjectQuery) {

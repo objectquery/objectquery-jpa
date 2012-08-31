@@ -1,4 +1,4 @@
-package org.objectquery.jpaquerybuilder.domain;
+package org.objectquery.jpaobjectquery.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

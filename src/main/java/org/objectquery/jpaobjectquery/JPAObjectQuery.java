@@ -1,4 +1,4 @@
-package org.objectquery.jpaquerybuilder;
+package org.objectquery.jpaobjectquery;
 
 import java.util.Map;
 
@@ -25,6 +25,10 @@ public class JPAObjectQuery {
 			qu.setParameter(ent.getKey(), ent.getValue());
 		}
 		return qu;
+	}
+
+	public static Object execute(ObjectQuery<?> objectQuery, EntityManager entityManager) {
+		return buildQuery(objectQuery, entityManager).getResultList();
 	}
 
 }

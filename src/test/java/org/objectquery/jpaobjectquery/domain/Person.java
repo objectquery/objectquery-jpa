@@ -1,4 +1,4 @@
-package org.objectquery.jpaquerybuilder.domain;
+package org.objectquery.jpaobjectquery.domain;
 
 import java.util.List;
 

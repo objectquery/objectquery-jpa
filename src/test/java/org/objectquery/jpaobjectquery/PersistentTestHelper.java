@@ -1,13 +1,13 @@
-package org.objectquery.jpaquerybuilder;
+package org.objectquery.jpaobjectquery;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.objectquery.jpaquerybuilder.domain.Dog;
-import org.objectquery.jpaquerybuilder.domain.Home;
-import org.objectquery.jpaquerybuilder.domain.Home.HomeType;
-import org.objectquery.jpaquerybuilder.domain.Person;
+import org.objectquery.jpaobjectquery.domain.Dog;
+import org.objectquery.jpaobjectquery.domain.Home;
+import org.objectquery.jpaobjectquery.domain.Person;
+import org.objectquery.jpaobjectquery.domain.Home.HomeType;
 
 public class PersistentTestHelper {
 
