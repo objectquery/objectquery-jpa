@@ -9,11 +9,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.objectquery.builder.GenericObjectQuery;
-import org.objectquery.builder.ObjectQuery;
-import org.objectquery.builder.OrderType;
-import org.objectquery.builder.ProjectionType;
-import org.objectquery.jpaobjectquery.JPAObjectQuery;
+import org.objectquery.ObjectQuery;
+import org.objectquery.generic.GenericObjectQuery;
+import org.objectquery.generic.OrderType;
+import org.objectquery.generic.ProjectionType;
 import org.objectquery.jpaobjectquery.domain.Home;
 import org.objectquery.jpaobjectquery.domain.Person;
 

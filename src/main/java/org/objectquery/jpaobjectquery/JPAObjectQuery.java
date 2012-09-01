@@ -5,9 +5,9 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.objectquery.builder.GenericObjectQuery;
-import org.objectquery.builder.ObjectQuery;
-import org.objectquery.builder.ObjectQueryException;
+import org.objectquery.ObjectQuery;
+import org.objectquery.generic.GenericObjectQuery;
+import org.objectquery.generic.ObjectQueryException;
 
 public class JPAObjectQuery {
 

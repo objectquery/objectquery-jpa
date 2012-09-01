@@ -6,8 +6,8 @@ import javax.persistence.Persistence;
 
 import org.objectquery.jpaobjectquery.domain.Dog;
 import org.objectquery.jpaobjectquery.domain.Home;
-import org.objectquery.jpaobjectquery.domain.Person;
 import org.objectquery.jpaobjectquery.domain.Home.HomeType;
+import org.objectquery.jpaobjectquery.domain.Person;
 
 public class PersistentTestHelper {
 
