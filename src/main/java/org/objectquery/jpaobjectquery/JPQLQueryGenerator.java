@@ -210,7 +210,7 @@ public class JPQLQueryGenerator {
 		GenericInternalQueryBuilder.buildPath(conditionItem.getItem(), builder, "_");
 	}
 
-	public Map<String, Object> getParamenters() {
+	public Map<String, Object> getParameters() {
 		return parameters;
 	}
 

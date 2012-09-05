@@ -20,7 +20,7 @@ public class JPAObjectQuery {
 	public static Query buildQuery(ObjectQuery<?> objectQuery, EntityManager entityManager) {
 		JPQLQueryGenerator gen = jpqlGenerator(objectQuery);
 		Query qu = entityManager.createQuery(gen.getQuery());
-		Map<String, Object> pars = gen.getParamenters();
+		Map<String, Object> pars = gen.getParameters();
 		for (Map.Entry<String, Object> ent : pars.entrySet()) {
 			qu.setParameter(ent.getKey(), ent.getValue());
 		}

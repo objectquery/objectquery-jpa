@@ -27,7 +27,7 @@ public class TestSimpleQuery {
 
 	@Test
 	public void testDupliedPath() {
-
+		
 		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getName(), "tom");
@@ -37,6 +37,7 @@ public class TestSimpleQuery {
 				.jpqlGenerator(qp).getQuery());
 
 	}
+	
 
 	@Test
 	public void testDottedPath() {

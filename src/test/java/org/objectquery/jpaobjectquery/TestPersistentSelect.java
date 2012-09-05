@@ -33,6 +33,7 @@ public class TestPersistentSelect {
 		qp.eq(target.getName(), "tom");
 
 		List<Person> res = JPAObjectQuery.buildQuery(qp, entityManager).getResultList();
+
 		Assert.assertEquals(1, res.size());
 		Assert.assertEquals(res.get(0).getName(), "tom");
 	}
