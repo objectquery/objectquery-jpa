@@ -71,6 +71,10 @@ public class JPQLQueryGenerator {
 			return " not in ";
 		case NOT_LIKE:
 			return "not like";
+		case LIKE_NOCASE:
+			return "";
+		case NOT_LIKE_NOCASE:
+			return "";
 		}
 		return "";
 	}
@@ -98,13 +102,18 @@ public class JPQLQueryGenerator {
 
 	private void stringfyCondition(ConditionItem cond, StringBuilder sb) {
 
-		if (cond.getType().equals(ConditionType.CONTAINS) || cond.getType().equals(ConditionType.NOT_CONTAINS)) {
-			if (cond.getValue() instanceof PathItem) {
-				buildName((PathItem) cond.getValue(), sb);
-			} else {
-				sb.append(":");
-				sb.append(buildParameterName(cond));
+		if (cond.getType().equals(ConditionType.LIKE_NOCASE) || cond.getType().equals(ConditionType.NOT_LIKE_NOCASE)) {
+			sb.append("UPPER(");
+			buildName(cond.getItem(), sb);
+			sb.append(")");
+			if (cond.getType().equals(ConditionType.NOT_LIKE_NOCASE)) {
+				sb.append(" not");
 			}
+			sb.append(" like UPPER(");
+			conditionValue(cond, sb);
+			sb.append(")");
+		} else if (cond.getType().equals(ConditionType.CONTAINS) || cond.getType().equals(ConditionType.NOT_CONTAINS)) {
+			conditionValue(cond, sb);
 			sb.append(" ").append(getConditionType(cond.getType())).append(" ");
 			buildName(cond.getItem(), sb);
 		} else {
@@ -112,14 +121,18 @@ public class JPQLQueryGenerator {
 			sb.append(" ").append(getConditionType(cond.getType())).append(" ");
 			if (cond.getType().equals(ConditionType.IN) || cond.getType().equals(ConditionType.NOT_IN))
 				sb.append("(");
-			if (cond.getValue() instanceof PathItem) {
-				buildName((PathItem) cond.getValue(), sb);
-			} else {
-				sb.append(":");
-				sb.append(buildParameterName(cond));
-			}
+			conditionValue(cond, sb);
 			if (cond.getType().equals(ConditionType.IN) || cond.getType().equals(ConditionType.NOT_IN))
 				sb.append(")");
+		}
+	}
+
+	private void conditionValue(ConditionItem cond, StringBuilder sb) {
+		if (cond.getValue() instanceof PathItem) {
+			buildName((PathItem) cond.getValue(), sb);
+		} else {
+			sb.append(":");
+			sb.append(buildParameterName(cond));
 		}
 	}
 

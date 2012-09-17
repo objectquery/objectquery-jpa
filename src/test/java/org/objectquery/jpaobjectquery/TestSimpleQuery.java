@@ -155,14 +155,17 @@ public class TestSimpleQuery {
 		Person target = qp.target();
 		qp.eq(target.getName(), "tom");
 		qp.like(target.getName(), "tom");
+		qp.notLike(target.getName(), "tom");
 		qp.max(target.getName(), "tom");
 		qp.min(target.getName(), "tom");
 		qp.maxEq(target.getName(), "tom");
 		qp.minEq(target.getName(), "tom");
 		qp.notEq(target.getName(), "tom");
+		qp.likeNc(target.getName(), "tom");
+		qp.notLikeNc(target.getName(), "tom");
 
 		Assert.assertEquals(
-				"select A from org.objectquery.jpaobjectquery.domain.Person A where A.name  =  :name AND A.name  like  :name1 AND A.name  >  :name2 AND A.name  <  :name3 AND A.name  >=  :name4 AND A.name  <=  :name5 AND A.name  <>  :name6",
+				"select A from org.objectquery.jpaobjectquery.domain.Person A where A.name  =  :name AND A.name  like  :name1 AND A.name not like :name2 AND A.name  >  :name3 AND A.name  <  :name4 AND A.name  >=  :name5 AND A.name  <=  :name6 AND A.name  <>  :name7 AND UPPER(A.name) like UPPER(:name8) AND UPPER(A.name) not like UPPER(:name9)",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
