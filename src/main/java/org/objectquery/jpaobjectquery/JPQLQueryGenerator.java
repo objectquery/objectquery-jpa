@@ -12,6 +12,7 @@ import org.objectquery.generic.ConditionItem;
 import org.objectquery.generic.ConditionType;
 import org.objectquery.generic.GenericInternalQueryBuilder;
 import org.objectquery.generic.GenericObjectQuery;
+import org.objectquery.generic.Having;
 import org.objectquery.generic.Order;
 import org.objectquery.generic.PathItem;
 import org.objectquery.generic.Projection;
@@ -86,14 +87,14 @@ public class JPQLQueryGenerator {
 		GenericInternalQueryBuilder.buildPath(item, sb);
 	}
 
-	private String buildParameterName(ConditionItem cond) {
+	private String buildParameterName(PathItem item, Object value) {
 		StringBuilder name = new StringBuilder();
-		buildParameterName(cond, name);
+		buildParameterName(item, name);
 		int i = 1;
 		String realName = name.toString();
 		do {
 			if (!parameters.containsKey(realName)) {
-				parameters.put(realName, cond.getValue());
+				parameters.put(realName, value);
 				return realName;
 			}
 			realName = name.toString() + i++;
@@ -132,7 +133,7 @@ public class JPQLQueryGenerator {
 			buildName((PathItem) cond.getValue(), sb);
 		} else {
 			sb.append(":");
-			sb.append(buildParameterName(cond));
+			sb.append(buildParameterName(cond.getItem(), cond.getValue()));
 		}
 	}
 
@@ -146,6 +147,8 @@ public class JPQLQueryGenerator {
 			return "MIN";
 		case COUNT:
 			return "COUNT";
+		case SUM:
+			return "SUM";
 		}
 		return "";
 	}
@@ -198,6 +201,22 @@ public class JPQLQueryGenerator {
 		} else if (orderGrouped && query.getProjections().isEmpty()) {
 			builder.append(" group by A ");
 		}
+		
+		if (!query.getHavings().isEmpty()) {
+			builder.append(" having");
+			Iterator<Having> havings = query.getHavings().iterator();
+			while (havings.hasNext()) {
+				Having having = havings.next();
+				builder.append(" ").append(resolveFunction(having.getProjectionType())).append('(');
+				buildName(having.getItem(), builder);
+				builder.append(')').append(getConditionType(having.getConditionType()));
+				builder.append(":");
+				builder.append(buildParameterName(having.getItem(), having.getValue()));
+				if (havings.hasNext())
+					builder.append(" AND");
+
+			}
+		}
 
 		if (!query.getOrders().isEmpty()) {
 			builder.append(" order by ");
@@ -215,12 +234,12 @@ public class JPQLQueryGenerator {
 					builder.append(',');
 			}
 		}
-
+	
 		this.query = builder.toString();
 	}
 
-	private void buildParameterName(ConditionItem conditionItem, StringBuilder builder) {
-		GenericInternalQueryBuilder.buildPath(conditionItem.getItem(), builder, "_");
+	private void buildParameterName(PathItem conditionItem, StringBuilder builder) {
+		GenericInternalQueryBuilder.buildPath(conditionItem, builder, "_");
 	}
 
 	public Map<String, Object> getParameters() {

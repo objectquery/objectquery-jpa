@@ -27,7 +27,7 @@ public class TestSimpleQuery {
 
 	@Test
 	public void testDupliedPath() {
-		
+
 		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getName(), "tom");
@@ -37,7 +37,6 @@ public class TestSimpleQuery {
 				.jpqlGenerator(qp).getQuery());
 
 	}
-	
 
 	@Test
 	public void testDottedPath() {
@@ -60,8 +59,8 @@ public class TestSimpleQuery {
 		qp.prj(target.getName());
 		qp.eq(target.getDog().getName(), "tom");
 
-		Assert.assertEquals("select A.name from org.objectquery.jpaobjectquery.domain.Person A where A.dog.name  =  :dog_name",
-				JPAObjectQuery.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select A.name from org.objectquery.jpaobjectquery.domain.Person A where A.dog.name  =  :dog_name", JPAObjectQuery
+				.jpqlGenerator(qp).getQuery());
 
 	}
 
@@ -113,8 +112,7 @@ public class TestSimpleQuery {
 		qp.order(target.getName(), OrderType.DESC);
 		qp.order(target.getDog().getName(), OrderType.DESC);
 
-		Assert.assertEquals(
-				"select A from org.objectquery.jpaobjectquery.domain.Person A where A.dog.name  =  :dog_name order by A.name DESC,A.dog.name DESC",
+		Assert.assertEquals("select A from org.objectquery.jpaobjectquery.domain.Person A where A.dog.name  =  :dog_name order by A.name DESC,A.dog.name DESC",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
@@ -127,8 +125,7 @@ public class TestSimpleQuery {
 		qp.eq(target.getAddress(), "homeless");
 		qp.order(qp.box(target.getPrice()), ProjectionType.COUNT, OrderType.ASC);
 
-		Assert.assertEquals(
-				"select A from org.objectquery.jpaobjectquery.domain.Home A where A.address  =  :address group by A  order by  COUNT(A.price) ASC",
+		Assert.assertEquals("select A from org.objectquery.jpaobjectquery.domain.Home A where A.address  =  :address group by A  order by  COUNT(A.price) ASC",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
@@ -213,4 +210,18 @@ public class TestSimpleQuery {
 
 	}
 
+	@Test
+	public void testProjectionGroupHaving() {
+
+		ObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
+		Home target = qp.target();
+		qp.prj(target.getAddress());
+		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
+		qp.order(target.getAddress());
+		qp.having(qp.box(target.getPrice()), ProjectionType.MAX).eq(0D);
+
+		Assert.assertEquals("select A.address, MAX(A.price) from org.objectquery.jpaobjectquery.domain.Home A group by A.address having MAX(A.price) = :price order by A.address",
+				JPAObjectQuery.jpqlGenerator(qp).getQuery());
+
+	}
 }
