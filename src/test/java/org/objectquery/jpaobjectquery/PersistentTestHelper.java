@@ -62,6 +62,8 @@ public class PersistentTestHelper {
 		tom.setDud(tomDud);
 		tom.setMum(tomMum);
 		tom.setDog(tomDog);
+		tomDud.setDog(tomDog);
+		entityManager.persist(tomDud);
 		entityManager.persist(tom);
 		entityManager.getTransaction().commit();
 		entityManager.close();
