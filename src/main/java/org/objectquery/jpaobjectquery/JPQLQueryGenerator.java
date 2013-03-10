@@ -24,7 +24,10 @@ public class JPQLQueryGenerator {
 	private String query;
 
 	JPQLQueryGenerator(GenericObjectQuery<?> jpqlObjectQuery) {
-		buildQuery(jpqlObjectQuery.getTargetClass(), (GenericInternalQueryBuilder) jpqlObjectQuery.getBuilder());
+		if (jpqlObjectQuery.getRootPathItem().getName() == null || jpqlObjectQuery.getRootPathItem().getName().isEmpty()) {
+			jpqlObjectQuery.getRootPathItem().setName("A");
+		}
+		buildQuery(jpqlObjectQuery.getTargetClass(), (GenericInternalQueryBuilder) jpqlObjectQuery.getBuilder(), jpqlObjectQuery.getRootPathItem().getName());
 	}
 
 	private void stringfyGroup(ConditionGroup group, StringBuilder builder) {
@@ -56,13 +59,13 @@ public class JPQLQueryGenerator {
 			return " in ";
 		case LIKE:
 			return " like ";
-		case MAX:
+		case GREATER:
 			return " > ";
-		case MIN:
+		case LESS:
 			return " < ";
-		case MAX_EQUALS:
+		case GREATER_EQUALS:
 			return " >= ";
-		case MIN_EQUALS:
+		case LESS_EQUALS:
 			return " <= ";
 		case NOT_CONTAINS:
 			return " not member of ";
@@ -81,9 +84,6 @@ public class JPQLQueryGenerator {
 	}
 
 	private void buildName(PathItem item, StringBuilder sb) {
-		sb.append("A");
-		if (item.getParent() != null)
-			sb.append(".");
 		GenericInternalQueryBuilder.buildPath(item, sb);
 	}
 
@@ -131,6 +131,12 @@ public class JPQLQueryGenerator {
 	private void conditionValue(ConditionItem cond, StringBuilder sb) {
 		if (cond.getValue() instanceof PathItem) {
 			buildName((PathItem) cond.getValue(), sb);
+		} else if (cond.getValue() instanceof GenericObjectQuery<?>) {
+			GenericObjectQuery<?> goq = ((GenericObjectQuery<?>) cond.getValue());
+			sb.append("(");
+			buildQueryString(goq.getTargetClass(), (GenericInternalQueryBuilder) goq.getBuilder(), sb, goq.getRootPathItem().getName());
+			sb.append(")");
+
 		} else {
 			sb.append(":");
 			sb.append(buildParameterName(cond.getItem(), cond.getValue()));
@@ -153,11 +159,16 @@ public class JPQLQueryGenerator {
 		return "";
 	}
 
-	public void buildQuery(Class<?> clazz, GenericInternalQueryBuilder query) {
+	public void buildQuery(Class<?> clazz, GenericInternalQueryBuilder query, String prefix) {
 		parameters.clear();
+		StringBuilder builder = new StringBuilder();
+		buildQueryString(clazz, query, builder, prefix);
+		this.query = builder.toString();
+	}
+
+	public void buildQueryString(Class<?> clazz, GenericInternalQueryBuilder query, StringBuilder builder, String prefix) {
 		List<Projection> groupby = new ArrayList<Projection>();
 		boolean grouped = false;
-		StringBuilder builder = new StringBuilder();
 		builder.append("select ");
 		if (!query.getProjections().isEmpty()) {
 			Iterator<Projection> projections = query.getProjections().iterator();
@@ -168,15 +179,22 @@ public class JPQLQueryGenerator {
 					grouped = true;
 				} else
 					groupby.add(proj);
-				buildName(proj.getItem(), builder);
+				if (proj.getItem() instanceof PathItem)
+					buildName((PathItem) proj.getItem(), builder);
+				else {
+					GenericObjectQuery<?> goq = ((GenericObjectQuery<?>) proj.getItem());
+					builder.append("(");
+					buildQueryString(goq.getTargetClass(), (GenericInternalQueryBuilder) goq.getBuilder(), builder, goq.getRootPathItem().getName());
+					builder.append(")");
+				}
 				if (proj.getType() != null)
 					builder.append(")");
 				if (projections.hasNext())
 					builder.append(",");
 			}
 		} else
-			builder.append("A");
-		builder.append(" from ").append(clazz.getName()).append(" A");
+			builder.append(prefix);
+		builder.append(" from ").append(clazz.getName()).append(" ").append(prefix);
 		if (!query.getConditions().isEmpty()) {
 			builder.append(" where ");
 			stringfyGroup(query, builder);
@@ -194,14 +212,21 @@ public class JPQLQueryGenerator {
 			Iterator<Projection> projections = groupby.iterator();
 			while (projections.hasNext()) {
 				Projection proj = projections.next();
-				buildName(proj.getItem(), builder);
+				if (proj.getItem() instanceof PathItem)
+					buildName((PathItem) proj.getItem(), builder);
+				else {
+					GenericObjectQuery<?> goq = ((GenericObjectQuery<?>) proj.getItem());
+					builder.append("(");
+					buildQueryString(goq.getTargetClass(), (GenericInternalQueryBuilder) goq.getBuilder(), builder, goq.getRootPathItem().getName());
+					builder.append(")");
+				}
 				if (projections.hasNext())
 					builder.append(",");
 			}
 		} else if (orderGrouped && query.getProjections().isEmpty()) {
-			builder.append(" group by A ");
+			builder.append(" group by ").append(prefix).append(" ");
 		}
-		
+
 		if (!query.getHavings().isEmpty()) {
 			builder.append(" having");
 			Iterator<Having> havings = query.getHavings().iterator();
@@ -225,7 +250,14 @@ public class JPQLQueryGenerator {
 				Order ord = orders.next();
 				if (ord.getProjectionType() != null)
 					builder.append(" ").append(resolveFunction(ord.getProjectionType())).append("(");
-				buildName(ord.getItem(), builder);
+				if (ord.getItem() instanceof PathItem)
+					buildName((PathItem) ord.getItem(), builder);
+				else {
+					GenericObjectQuery<?> goq = ((GenericObjectQuery<?>) ord.getItem());
+					builder.append("(");
+					buildQueryString(goq.getTargetClass(), (GenericInternalQueryBuilder) goq.getBuilder(), builder, goq.getRootPathItem().getName());
+					builder.append(")");
+				}
 				if (ord.getProjectionType() != null)
 					builder.append(")");
 				if (ord.getType() != null)
@@ -234,8 +266,6 @@ public class JPQLQueryGenerator {
 					builder.append(',');
 			}
 		}
-	
-		this.query = builder.toString();
 	}
 
 	private void buildParameterName(PathItem conditionItem, StringBuilder builder) {
