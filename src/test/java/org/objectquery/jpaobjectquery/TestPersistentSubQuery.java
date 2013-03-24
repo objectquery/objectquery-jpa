@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
+import org.objectquery.generic.ObjectQueryException;
+import org.objectquery.generic.ProjectionType;
 import org.objectquery.jpaobjectquery.domain.Dog;
 import org.objectquery.jpaobjectquery.domain.Person;
 
@@ -20,10 +22,6 @@ public class TestPersistentSubQuery {
 	public void beforeTest() {
 		entityManager = PersistentTestHelper.getFactory().createEntityManager();
 		entityManager.getTransaction().begin();
-	}
-
-	private static String getQueryString(ObjectQuery<Person> query) {
-		return JPAObjectQuery.jpqlGenerator(query).getQuery();
 	}
 
 	@Test
@@ -94,4 +92,43 @@ public class TestPersistentSubQuery {
 
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testProjectionSubquery() {
+		GenericObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);
+		Person target = query.target();
+		ObjectQuery<Person> subQuery = query.subQuery(Person.class);
+		subQuery.eq(subQuery.target().getDog().getOwner(), target.getDud());
+		query.prj(subQuery);
+
+		List<Person> res = JPAObjectQuery.buildQuery(query, entityManager).getResultList();
+		Assert.assertEquals(3, res.size());
+		Assert.assertEquals(res.get(0), null);
+		Assert.assertEquals(res.get(1), null);
+		Assert.assertEquals(res.get(1), null);
+
+	}
+
+	@Test(expected=ObjectQueryException.class)
+	public void testOrderSubquery() {
+		GenericObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);
+		Person target = query.target();
+		ObjectQuery<Person> subQuery = query.subQuery(Person.class);
+		subQuery.eq(subQuery.target().getDog().getOwner(), target.getDud());
+		query.order(subQuery);
+
+		JPAObjectQuery.buildQuery(query, entityManager).getResultList();
+	}
+	
+	@Test(expected=ObjectQueryException.class)
+	public void testHavingSubquery() {
+		GenericObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);
+		Person target = query.target();
+		ObjectQuery<Person> subQuery = query.subQuery(Person.class);
+		subQuery.eq(subQuery.target().getDog().getOwner(), target.getDud());
+		query.having(subQuery, ProjectionType.COUNT).eq(3D);
+
+		JPAObjectQuery.buildQuery(query, entityManager).getResultList();
+	}
+		
 }

@@ -13,6 +13,7 @@ import org.objectquery.generic.ConditionType;
 import org.objectquery.generic.GenericInternalQueryBuilder;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.Having;
+import org.objectquery.generic.ObjectQueryException;
 import org.objectquery.generic.Order;
 import org.objectquery.generic.PathItem;
 import org.objectquery.generic.Projection;
@@ -132,11 +133,7 @@ public class JPQLQueryGenerator {
 		if (cond.getValue() instanceof PathItem) {
 			buildName((PathItem) cond.getValue(), sb);
 		} else if (cond.getValue() instanceof GenericObjectQuery<?>) {
-			GenericObjectQuery<?> goq = ((GenericObjectQuery<?>) cond.getValue());
-			sb.append("(");
-			buildQueryString(goq.getTargetClass(), (GenericInternalQueryBuilder) goq.getBuilder(), sb, goq.getRootPathItem().getName());
-			sb.append(")");
-
+			buildSubquery(sb, (GenericObjectQuery<?>) cond.getValue());
 		} else {
 			sb.append(":");
 			sb.append(buildParameterName(cond.getItem(), cond.getValue()));
@@ -181,12 +178,8 @@ public class JPQLQueryGenerator {
 					groupby.add(proj);
 				if (proj.getItem() instanceof PathItem)
 					buildName((PathItem) proj.getItem(), builder);
-				else {
-					GenericObjectQuery<?> goq = ((GenericObjectQuery<?>) proj.getItem());
-					builder.append("(");
-					buildQueryString(goq.getTargetClass(), (GenericInternalQueryBuilder) goq.getBuilder(), builder, goq.getRootPathItem().getName());
-					builder.append(")");
-				}
+				else
+					buildSubquery(builder, (GenericObjectQuery<?>) proj.getItem());
 				if (proj.getType() != null)
 					builder.append(")");
 				if (projections.hasNext())
@@ -214,12 +207,8 @@ public class JPQLQueryGenerator {
 				Projection proj = projections.next();
 				if (proj.getItem() instanceof PathItem)
 					buildName((PathItem) proj.getItem(), builder);
-				else {
-					GenericObjectQuery<?> goq = ((GenericObjectQuery<?>) proj.getItem());
-					builder.append("(");
-					buildQueryString(goq.getTargetClass(), (GenericInternalQueryBuilder) goq.getBuilder(), builder, goq.getRootPathItem().getName());
-					builder.append(")");
-				}
+				else
+					buildSubquery(builder, (GenericObjectQuery<?>) proj.getItem());
 				if (projections.hasNext())
 					builder.append(",");
 			}
@@ -233,10 +222,13 @@ public class JPQLQueryGenerator {
 			while (havings.hasNext()) {
 				Having having = havings.next();
 				builder.append(" ").append(resolveFunction(having.getProjectionType())).append('(');
-				buildName(having.getItem(), builder);
+				if (having.getItem() instanceof PathItem)
+					buildName((PathItem) having.getItem(), builder);
+				else
+					throw new ObjectQueryException("unsupported subquery in the having clause for hql datastore", null);
 				builder.append(')').append(getConditionType(having.getConditionType()));
 				builder.append(":");
-				builder.append(buildParameterName(having.getItem(), having.getValue()));
+				builder.append(buildParameterName((PathItem) having.getItem(), having.getValue()));
 				if (havings.hasNext())
 					builder.append(" AND");
 
@@ -253,10 +245,13 @@ public class JPQLQueryGenerator {
 				if (ord.getItem() instanceof PathItem)
 					buildName((PathItem) ord.getItem(), builder);
 				else {
+					throw new ObjectQueryException("Operation not supported by JPA datastore", null);
+					/*
 					GenericObjectQuery<?> goq = ((GenericObjectQuery<?>) ord.getItem());
 					builder.append("(");
 					buildQueryString(goq.getTargetClass(), (GenericInternalQueryBuilder) goq.getBuilder(), builder, goq.getRootPathItem().getName());
 					builder.append(")");
+					*/
 				}
 				if (ord.getProjectionType() != null)
 					builder.append(")");
@@ -266,6 +261,12 @@ public class JPQLQueryGenerator {
 					builder.append(',');
 			}
 		}
+	}
+
+	private void buildSubquery(StringBuilder builder, GenericObjectQuery<?> goq) {
+		builder.append("(");
+		buildQueryString(goq.getTargetClass(), (GenericInternalQueryBuilder) goq.getBuilder(), builder, goq.getRootPathItem().getName());
+		builder.append(")");
 	}
 
 	private void buildParameterName(PathItem conditionItem, StringBuilder builder) {

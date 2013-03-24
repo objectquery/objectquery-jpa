@@ -34,7 +34,9 @@ public class TestSubQuery {
 		subQuery.eq(subQuery.target().getName(), target.getDog().getName());
 		query.eq(query.target().getDud(), subQuery);
 
-		Assert.assertEquals("select A from org.objectquery.jpaobjectquery.domain.Person A where A.dud  =  (select AA0 from org.objectquery.jpaobjectquery.domain.Person AA0 where AA0.name  =  A.dog.name)", getQueryString(query));
+		Assert.assertEquals(
+				"select A from org.objectquery.jpaobjectquery.domain.Person A where A.dud  =  (select AA0 from org.objectquery.jpaobjectquery.domain.Person AA0 where AA0.name  =  A.dog.name)",
+				getQueryString(query));
 	}
 
 	@Test
@@ -66,7 +68,23 @@ public class TestSubQuery {
 		query.eq(target.getDud(), subQuery);
 		query.eq(target.getMum(), subQuery1);
 
-		Assert.assertEquals("select A from org.objectquery.jpaobjectquery.domain.Person A where A.dud  =  (select AA0 from org.objectquery.jpaobjectquery.domain.Person AA0) AND A.mum  =  (select AA1 from org.objectquery.jpaobjectquery.domain.Person AA1)", getQueryString(query));
+		Assert.assertEquals(
+				"select A from org.objectquery.jpaobjectquery.domain.Person A where A.dud  =  (select AA0 from org.objectquery.jpaobjectquery.domain.Person AA0) AND A.mum  =  (select AA1 from org.objectquery.jpaobjectquery.domain.Person AA1)",
+				getQueryString(query));
+
+	}
+
+	@Test
+	public void testProjectionSubquery() {
+		GenericObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);
+		Person target = query.target();
+		ObjectQuery<Person> subQuery = query.subQuery(Person.class);
+		subQuery.eq(subQuery.target().getDog().getOwner(), target.getDud());
+		query.prj(subQuery);
+
+		Assert.assertEquals(
+				"select (select AA0 from org.objectquery.jpaobjectquery.domain.Person AA0 where AA0.dog.owner  =  A.dud) from org.objectquery.jpaobjectquery.domain.Person A",
+				getQueryString(query));
 
 	}
 
