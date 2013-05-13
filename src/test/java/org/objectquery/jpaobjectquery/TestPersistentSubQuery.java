@@ -93,7 +93,7 @@ public class TestPersistentSubQuery {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Test
+	@Test(expected = ObjectQueryException.class)
 	public void testProjectionSubquery() {
 		GenericObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);
 		Person target = query.target();
@@ -109,7 +109,7 @@ public class TestPersistentSubQuery {
 
 	}
 
-	@Test(expected=ObjectQueryException.class)
+	@Test(expected = ObjectQueryException.class)
 	public void testOrderSubquery() {
 		GenericObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);
 		Person target = query.target();
@@ -119,8 +119,8 @@ public class TestPersistentSubQuery {
 
 		JPAObjectQuery.buildQuery(query, entityManager).getResultList();
 	}
-	
-	@Test(expected=ObjectQueryException.class)
+
+	@Test(expected = ObjectQueryException.class)
 	public void testHavingSubquery() {
 		GenericObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);
 		Person target = query.target();
@@ -130,5 +130,5 @@ public class TestPersistentSubQuery {
 
 		JPAObjectQuery.buildQuery(query, entityManager).getResultList();
 	}
-		
+
 }

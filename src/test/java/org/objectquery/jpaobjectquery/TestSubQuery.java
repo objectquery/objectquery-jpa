@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
+import org.objectquery.generic.ObjectQueryException;
 import org.objectquery.jpaobjectquery.domain.Person;
 
 public class TestSubQuery {
@@ -74,7 +75,7 @@ public class TestSubQuery {
 
 	}
 
-	@Test
+	@Test(expected = ObjectQueryException.class)
 	public void testProjectionSubquery() {
 		GenericObjectQuery<Person> query = new GenericObjectQuery<Person>(Person.class);
 		Person target = query.target();

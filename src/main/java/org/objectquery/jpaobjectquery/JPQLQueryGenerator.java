@@ -179,7 +179,7 @@ public class JPQLQueryGenerator {
 				if (proj.getItem() instanceof PathItem)
 					buildName((PathItem) proj.getItem(), builder);
 				else
-					buildSubquery(builder, (GenericObjectQuery<?>) proj.getItem());
+					throw new ObjectQueryException("unsupported subquery in the projection by JPA datastore", null);
 				if (proj.getType() != null)
 					builder.append(")");
 				if (projections.hasNext())
@@ -208,7 +208,8 @@ public class JPQLQueryGenerator {
 				if (proj.getItem() instanceof PathItem)
 					buildName((PathItem) proj.getItem(), builder);
 				else
-					buildSubquery(builder, (GenericObjectQuery<?>) proj.getItem());
+					throw new ObjectQueryException("unsupported subquery in the projection by JPA datastore", null);
+
 				if (projections.hasNext())
 					builder.append(",");
 			}
@@ -225,7 +226,7 @@ public class JPQLQueryGenerator {
 				if (having.getItem() instanceof PathItem)
 					buildName((PathItem) having.getItem(), builder);
 				else
-					throw new ObjectQueryException("unsupported subquery in the having clause for hql datastore", null);
+					throw new ObjectQueryException("unsupported subquery in the having clause by JPA datastore", null);
 				builder.append(')').append(getConditionType(having.getConditionType()));
 				builder.append(":");
 				builder.append(buildParameterName((PathItem) having.getItem(), having.getValue()));
@@ -245,13 +246,7 @@ public class JPQLQueryGenerator {
 				if (ord.getItem() instanceof PathItem)
 					buildName((PathItem) ord.getItem(), builder);
 				else {
-					throw new ObjectQueryException("Operation not supported by JPA datastore", null);
-					/*
-					GenericObjectQuery<?> goq = ((GenericObjectQuery<?>) ord.getItem());
-					builder.append("(");
-					buildQueryString(goq.getTargetClass(), (GenericInternalQueryBuilder) goq.getBuilder(), builder, goq.getRootPathItem().getName());
-					builder.append(")");
-					*/
+					throw new ObjectQueryException("unsupported subquery in order by clouse by JPA datastore", null);
 				}
 				if (ord.getProjectionType() != null)
 					builder.append(")");
