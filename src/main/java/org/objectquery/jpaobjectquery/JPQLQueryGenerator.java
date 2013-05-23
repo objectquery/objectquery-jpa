@@ -182,7 +182,7 @@ public class JPQLQueryGenerator {
 				if (proj.getItem() instanceof PathItem)
 					buildName((PathItem) proj.getItem(), builder);
 				else
-					throw new ObjectQueryException("unsupported subquery in the projection by JPA datastore", null);
+					throw new ObjectQueryException("unsupported subquery in the projection by JPA datastore");
 				if (proj.getType() != null)
 					builder.append(")");
 				if (projections.hasNext())
@@ -192,11 +192,14 @@ public class JPQLQueryGenerator {
 			builder.append(prefix);
 		builder.append(" from ").append(clazz.getName()).append(" ").append(prefix);
 		for (Join join : joins) {
-			builder.append(getJoinType(join.getType()));
-			if (join.getJoinPath() != null)
+			if (join.getJoinPath() != null) {
+				builder.append(getJoinType(join.getType()));
 				buildName(join.getJoinPath(), builder);
-			else
-				builder.append(join.getRoot().getName());
+			} else {
+				if (join.getType() != JoinType.INNER)
+					throw new ObjectQueryException("not suppurted join type:" + join.getType() + " without specify a join path");
+				builder.append(",").append(join.getJavaType().getName());
+			}
 			builder.append(" ").append(join.getRoot().getName());
 		}
 		if (!query.getConditions().isEmpty()) {
@@ -219,7 +222,7 @@ public class JPQLQueryGenerator {
 				if (proj.getItem() instanceof PathItem)
 					buildName((PathItem) proj.getItem(), builder);
 				else
-					throw new ObjectQueryException("unsupported subquery in the projection by JPA datastore", null);
+					throw new ObjectQueryException("unsupported subquery in the projection by JPA datastore");
 
 				if (projections.hasNext())
 					builder.append(",");
@@ -237,7 +240,7 @@ public class JPQLQueryGenerator {
 				if (having.getItem() instanceof PathItem)
 					buildName((PathItem) having.getItem(), builder);
 				else
-					throw new ObjectQueryException("unsupported subquery in the having clause by JPA datastore", null);
+					throw new ObjectQueryException("unsupported subquery in the having clause by JPA datastore");
 				builder.append(')').append(getConditionType(having.getConditionType()));
 				builder.append(":");
 				builder.append(buildParameterName((PathItem) having.getItem(), having.getValue()));
@@ -257,7 +260,7 @@ public class JPQLQueryGenerator {
 				if (ord.getItem() instanceof PathItem)
 					buildName((PathItem) ord.getItem(), builder);
 				else {
-					throw new ObjectQueryException("unsupported subquery in order by clouse by JPA datastore", null);
+					throw new ObjectQueryException("unsupported subquery in order by clause by JPA datastore");
 				}
 				if (ord.getProjectionType() != null)
 					builder.append(")");

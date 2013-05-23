@@ -14,7 +14,7 @@ public class JPAObjectQuery {
 	public static JPQLQueryGenerator jpqlGenerator(ObjectQuery<?> objectQuery) {
 		if (objectQuery instanceof GenericObjectQuery<?>)
 			return new JPQLQueryGenerator((GenericObjectQuery<?>) objectQuery);
-		throw new ObjectQueryException("The Object query instance of unconvertable implementation ", null);
+		throw new ObjectQueryException("The Object query instance of unconvertable implementation ");
 	}
 
 	public static Query buildQuery(ObjectQuery<?> objectQuery, EntityManager entityManager) {
