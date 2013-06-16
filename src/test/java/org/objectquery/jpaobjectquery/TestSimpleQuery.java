@@ -224,4 +224,15 @@ public class TestSimpleQuery {
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
+
+	@Test
+	public void testBetweenCondition() {
+		ObjectQuery<Home> qp = new GenericObjectQuery<Home>(Home.class);
+		Home target = qp.target();
+		qp.between(qp.box(target.getPrice()), 20D, 30D);
+
+		Assert.assertEquals("select A from org.objectquery.jpaobjectquery.domain.Home A where A.price  BETWEEN  :A_price AND :A_price1 ", JPAObjectQuery
+				.jpqlGenerator(qp).getQuery());
+
+	}
 }

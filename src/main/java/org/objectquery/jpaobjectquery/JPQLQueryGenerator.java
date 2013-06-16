@@ -80,9 +80,11 @@ public class JPQLQueryGenerator {
 		case NOT_LIKE:
 			return "not like";
 		case LIKE_NOCASE:
-			return "";
+			return " like ";
 		case NOT_LIKE_NOCASE:
-			return "";
+			return " not like ";
+		case BETWEEN:
+			return " BETWEEN ";
 		}
 		return "";
 	}
@@ -111,10 +113,8 @@ public class JPQLQueryGenerator {
 			sb.append("UPPER(");
 			buildName(cond.getItem(), sb);
 			sb.append(")");
-			if (cond.getType().equals(ConditionType.NOT_LIKE_NOCASE)) {
-				sb.append(" not");
-			}
-			sb.append(" like UPPER(");
+			sb.append(getConditionType(cond.getType()));
+			sb.append("UPPER(");
 			conditionValue(cond, sb);
 			sb.append(")");
 		} else if (cond.getType().equals(ConditionType.CONTAINS) || cond.getType().equals(ConditionType.NOT_CONTAINS)) {
@@ -129,6 +129,11 @@ public class JPQLQueryGenerator {
 			conditionValue(cond, sb);
 			if (cond.getType().equals(ConditionType.IN) || cond.getType().equals(ConditionType.NOT_IN))
 				sb.append(")");
+			if (cond.getType().equals(ConditionType.BETWEEN)) {
+				sb.append(" AND ");
+				conditionValueTo(cond, sb);
+				sb.append(" ");
+			}
 		}
 	}
 
@@ -140,6 +145,15 @@ public class JPQLQueryGenerator {
 		} else {
 			sb.append(":");
 			sb.append(buildParameterName(cond.getItem(), cond.getValue()));
+		}
+	}
+
+	private void conditionValueTo(ConditionItem cond, StringBuilder sb) {
+		if (cond.getValueTo() instanceof PathItem) {
+			buildName((PathItem) cond.getValue(), sb);
+		} else {
+			sb.append(":");
+			sb.append(buildParameterName(cond.getItem(), cond.getValueTo()));
 		}
 	}
 
@@ -270,6 +284,7 @@ public class JPQLQueryGenerator {
 					builder.append(',');
 			}
 		}
+		this.query = builder.toString();
 	}
 
 	private String getJoinType(JoinType type) {
