@@ -1,4 +1,4 @@
-package org.objectquery.jpaobjectquery;
+package org.objectquery.jpa;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -6,7 +6,8 @@ import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.JoinType;
 import org.objectquery.generic.ObjectQueryException;
-import org.objectquery.jpaobjectquery.domain.Person;
+import org.objectquery.jpa.JPAObjectQuery;
+import org.objectquery.jpa.domain.Person;
 
 public class TestJoinQuery {
 
@@ -17,7 +18,7 @@ public class TestJoinQuery {
 		query.eq(query.target().getMom(), joined);
 
 		Assert.assertEquals(
-				"select A from org.objectquery.jpaobjectquery.domain.Person A,org.objectquery.jpaobjectquery.domain.Person AB0 where A.mom  =  AB0",
+				"select A from org.objectquery.jpa.domain.Person A,org.objectquery.jpa.domain.Person AB0 where A.mom  =  AB0",
 				JPAObjectQuery.jpqlGenerator(query).getQuery());
 	}
 
@@ -28,7 +29,7 @@ public class TestJoinQuery {
 		query.eq(query.target().getMom(), joined);
 
 		Assert.assertEquals(
-				"select A from org.objectquery.jpaobjectquery.domain.Person A LEFT JOIN org.objectquery.jpaobjectquery.domain.Person AB0 where A.mom  =  AB0",
+				"select A from org.objectquery.jpa.domain.Person A LEFT JOIN org.objectquery.jpa.domain.Person AB0 where A.mom  =  AB0",
 				JPAObjectQuery.jpqlGenerator(query).getQuery());
 	}
 
@@ -38,7 +39,7 @@ public class TestJoinQuery {
 		Person joined = query.join(query.target().getMom(), Person.class, JoinType.LEFT);
 		query.eq(joined.getName(), "test");
 
-		Assert.assertEquals("select A from org.objectquery.jpaobjectquery.domain.Person A LEFT JOIN A.mom AB0 where AB0.name  =  :AB0_name", JPAObjectQuery
+		Assert.assertEquals("select A from org.objectquery.jpa.domain.Person A LEFT JOIN A.mom AB0 where AB0.name  =  :AB0_name", JPAObjectQuery
 				.jpqlGenerator(query).getQuery());
 	}
 

@@ -1,4 +1,4 @@
-package org.objectquery.jpaobjectquery;
+package org.objectquery.jpa;
 
 import java.util.ArrayList;
 import java.util.Iterator;

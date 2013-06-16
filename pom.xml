@@ -8,11 +8,11 @@
 	</parent>
 
 	<groupId>org.objectquery</groupId>
-	<artifactId>jpaobjectquery</artifactId>
+	<artifactId>objectquery-jpa</artifactId>
 	<version>1.5.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>jpaobjectquery</name>
+	<name>objectquery-jpa</name>
 	<url>http://www.objectquery.org</url>
 
 	<licenses>
@@ -63,9 +63,9 @@
 	</dependencies>
 
 	<scm>
-		<url>git@github.com:objectquery/jpaobjectquery.git</url>
-		<connection>scm:git:git@github.com:objectquery/jpaobjectquery.git</connection>
-		<developerConnection>scm:git:git@github.com:objectquery/jpaobjectquery.git</developerConnection>
+		<url>git@github.com:objectquery/objectquery-jpa.git</url>
+		<connection>scm:git:git@github.com:objectquery/objectquery-jpa.git</connection>
+		<developerConnection>scm:git:git@github.com:objectquery/objectquery-jpa.git</developerConnection>
 	</scm>
 	<organization>
 		<name>Object Query</name>
@@ -74,12 +74,12 @@
 
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/objectquery/jpaobjectquery/issues</url>
+		<url>https://github.com/objectquery/objectquery-jpa/issues</url>
 	</issueManagement>
 	<mailingLists>
 		<mailingList>
 			<name>Support</name>
-			<post>https://groups.google.com/group/objectquery</post>
+			<post>list@objectquery.org</post>
 		</mailingList>
 	</mailingLists>
 	<developers>

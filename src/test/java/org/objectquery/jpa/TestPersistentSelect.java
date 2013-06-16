@@ -1,4 +1,4 @@
-package org.objectquery.jpaobjectquery;
+package org.objectquery.jpa;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +13,9 @@ import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.OrderType;
 import org.objectquery.generic.ProjectionType;
-import org.objectquery.jpaobjectquery.domain.Home;
-import org.objectquery.jpaobjectquery.domain.Person;
+import org.objectquery.jpa.JPAObjectQuery;
+import org.objectquery.jpa.domain.Home;
+import org.objectquery.jpa.domain.Person;
 
 public class TestPersistentSelect {
 	private EntityManager entityManager;

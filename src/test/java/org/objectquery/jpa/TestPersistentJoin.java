@@ -1,4 +1,4 @@
-package org.objectquery.jpaobjectquery;
+package org.objectquery.jpa;
 
 import java.util.List;
 
@@ -12,7 +12,8 @@ import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.JoinType;
 import org.objectquery.generic.ObjectQueryException;
-import org.objectquery.jpaobjectquery.domain.Person;
+import org.objectquery.jpa.JPAObjectQuery;
+import org.objectquery.jpa.domain.Person;
 
 public class TestPersistentJoin {
 
