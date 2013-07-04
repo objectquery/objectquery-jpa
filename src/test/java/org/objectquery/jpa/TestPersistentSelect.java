@@ -13,7 +13,6 @@ import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.OrderType;
 import org.objectquery.generic.ProjectionType;
-import org.objectquery.jpa.JPAObjectQuery;
 import org.objectquery.jpa.domain.Home;
 import org.objectquery.jpa.domain.Person;
 
@@ -56,6 +55,17 @@ public class TestPersistentSelect {
 		List<Person> res = JPAObjectQuery.buildQuery(qp, entityManager).getResultList();
 		Assert.assertEquals(1, res.size());
 		Assert.assertEquals(res.get(0).getDud().getHome(), res.get(0).getMom().getHome());
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testSelectPathParam() {
+		GenericObjectQuery<Person> qp = new GenericObjectQuery<Person>(Person.class);
+		Person target = qp.target();
+		qp.eq(target.getDud().getName(), "tomdud");
+		List<Person> res = JPAObjectQuery.buildQuery(qp, entityManager).getResultList();
+		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(res.get(0).getDud().getName(), "tomdud");
 	}
 
 	@SuppressWarnings("unchecked")
