@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +12,6 @@ import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.ObjectQueryException;
 import org.objectquery.generic.ProjectionType;
-import org.objectquery.jpa.JPAObjectQuery;
 import org.objectquery.jpa.domain.Dog;
 import org.objectquery.jpa.domain.Person;
 
@@ -132,4 +132,14 @@ public class TestPersistentSubQuery {
 		JPAObjectQuery.buildQuery(query, entityManager).getResultList();
 	}
 
+	@After
+	public void afterTest() {
+		if (entityManager != null) {
+			entityManager.getTransaction().commit();
+			entityManager.close();
+		}
+		entityManager = null;
+	}
+
+	
 }

@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.ObjectQueryException;
-import org.objectquery.jpa.JPAObjectQuery;
 import org.objectquery.jpa.domain.Person;
 
 public class TestSubQuery {

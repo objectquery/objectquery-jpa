@@ -10,6 +10,7 @@ import org.objectquery.generic.ConditionElement;
 import org.objectquery.generic.ConditionGroup;
 import org.objectquery.generic.ConditionItem;
 import org.objectquery.generic.ConditionType;
+import org.objectquery.generic.GenericBaseQuery;
 import org.objectquery.generic.GenericInternalQueryBuilder;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.Having;
@@ -20,18 +21,87 @@ import org.objectquery.generic.Order;
 import org.objectquery.generic.PathItem;
 import org.objectquery.generic.Projection;
 import org.objectquery.generic.ProjectionType;
+import org.objectquery.generic.SetValue;
 
 public class JPQLQueryGenerator {
 
 	private Map<String, Object> parameters = new LinkedHashMap<String, Object>();
 	private String query;
 
-	JPQLQueryGenerator(GenericObjectQuery<?> jpqlObjectQuery) {
-		if (jpqlObjectQuery.getRootPathItem().getName() == null || jpqlObjectQuery.getRootPathItem().getName().isEmpty()) {
-			jpqlObjectQuery.getRootPathItem().setName("A");
+	JPQLQueryGenerator(GenericBaseQuery<?> baseQuery) {
+		GenericInternalQueryBuilder builder = (GenericInternalQueryBuilder) baseQuery.getBuilder();
+		switch (builder.getQueryType()) {
+		case SELECT:
+			if (baseQuery.getRootPathItem().getName() == null || baseQuery.getRootPathItem().getName().isEmpty()) {
+				baseQuery.getRootPathItem().setName("A");
+			}
+			buildSelect(baseQuery.getTargetClass(), builder, ((GenericObjectQuery<?>) baseQuery).getJoins(), baseQuery.getRootPathItem().getName());
+			break;
+		case DELETE:
+			buildDelete(baseQuery.getTargetClass(), builder);
+			break;
+
+		case INSERT:
+			buildInsert(baseQuery.getTargetClass(), builder);
+			break;
+
+		case UPDATE:
+			buildUpdate(baseQuery.getTargetClass(), builder);
+			break;
+
+		default:
+			break;
 		}
-		buildQuery(jpqlObjectQuery.getTargetClass(), (GenericInternalQueryBuilder) jpqlObjectQuery.getBuilder(), jpqlObjectQuery.getJoins(), jpqlObjectQuery
-				.getRootPathItem().getName());
+
+	}
+
+	private void buildInsert(Class<?> targetClass, GenericInternalQueryBuilder query) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("insert into ").append(targetClass.getName()).append(" (");
+		StringBuilder values = new StringBuilder(")values(");
+		if (!query.getSets().isEmpty()) {
+			Iterator<SetValue> iter = query.getSets().iterator();
+			while (iter.hasNext()) {
+				SetValue set = iter.next();
+				buildName(set.getTarget(), builder);
+				values.append(":").append(buildParameterName(set.getTarget(), set.getValue()));
+				if (iter.hasNext()) {
+					builder.append(",");
+					values.append(",");
+				}
+			}
+		}
+		this.query = builder.append(values).append(")").toString();
+	}
+
+	private void buildUpdate(Class<?> targetClass, GenericInternalQueryBuilder query) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("update ").append(targetClass.getName()).append(" set ");
+		if (!query.getSets().isEmpty()) {
+			Iterator<SetValue> iter = query.getSets().iterator();
+			while (iter.hasNext()) {
+				SetValue set = iter.next();
+				buildName(set.getTarget(), builder);
+				builder.append(" = ").append(":").append(buildParameterName(set.getTarget(), set.getValue()));
+				if (iter.hasNext())
+					builder.append(",");
+			}
+		}
+		if (!query.getConditions().isEmpty()) {
+			builder.append(" where ");
+			stringfyGroup(query, builder);
+		}
+		this.query = builder.toString();
+	}
+
+	private void buildDelete(Class<?> targetClass, GenericInternalQueryBuilder query) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("delete ").append(targetClass.getName()).append(" ");
+		if (!query.getConditions().isEmpty()) {
+			builder.append(" where ");
+			stringfyGroup(query, builder);
+		}
+		this.query = builder.toString();
 	}
 
 	private void stringfyGroup(ConditionGroup group, StringBuilder builder) {
@@ -173,7 +243,7 @@ public class JPQLQueryGenerator {
 		return "";
 	}
 
-	public void buildQuery(Class<?> clazz, GenericInternalQueryBuilder query, List<Join> joins, String prefix) {
+	public void buildSelect(Class<?> clazz, GenericInternalQueryBuilder query, List<Join> joins, String prefix) {
 		parameters.clear();
 		StringBuilder builder = new StringBuilder();
 		buildQueryString(clazz, query, joins, builder, prefix);

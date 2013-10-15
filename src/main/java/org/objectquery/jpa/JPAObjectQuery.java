@@ -5,19 +5,23 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.objectquery.BaseQuery;
+import org.objectquery.DeleteQuery;
+import org.objectquery.InsertQuery;
 import org.objectquery.ObjectQuery;
-import org.objectquery.generic.GenericObjectQuery;
+import org.objectquery.UpdateQuery;
+import org.objectquery.generic.GenericBaseQuery;
 import org.objectquery.generic.ObjectQueryException;
 
 public class JPAObjectQuery {
 
-	public static JPQLQueryGenerator jpqlGenerator(ObjectQuery<?> objectQuery) {
-		if (objectQuery instanceof GenericObjectQuery<?>)
-			return new JPQLQueryGenerator((GenericObjectQuery<?>) objectQuery);
+	public static JPQLQueryGenerator jpqlGenerator(BaseQuery<?> objectQuery) {
+		if (objectQuery instanceof GenericBaseQuery<?>)
+			return new JPQLQueryGenerator((GenericBaseQuery<?>) objectQuery);
 		throw new ObjectQueryException("The Object query instance of unconvertable implementation ");
 	}
 
-	public static Query buildQuery(ObjectQuery<?> objectQuery, EntityManager entityManager) {
+	public static Query buildQuery(BaseQuery<?> objectQuery, EntityManager entityManager) {
 		JPQLQueryGenerator gen = jpqlGenerator(objectQuery);
 		Query qu = entityManager.createQuery(gen.getQuery());
 		Map<String, Object> pars = gen.getParameters();
@@ -29,6 +33,18 @@ public class JPAObjectQuery {
 
 	public static Object execute(ObjectQuery<?> objectQuery, EntityManager entityManager) {
 		return buildQuery(objectQuery, entityManager).getResultList();
+	}
+
+	public static int execute(DeleteQuery<?> dq, EntityManager entityManager) {
+		return buildQuery(dq, entityManager).executeUpdate();
+	}
+
+	public static int execute(InsertQuery<?> ip, EntityManager entityManager) {
+		return buildQuery(ip, entityManager).executeUpdate();
+	}
+
+	public static int execute(UpdateQuery<?> query, EntityManager entityManager) {
+		return buildQuery(query, entityManager).executeUpdate();
 	}
 
 }

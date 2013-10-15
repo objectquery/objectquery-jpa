@@ -9,7 +9,6 @@ import org.objectquery.ObjectQuery;
 import org.objectquery.generic.GenericObjectQuery;
 import org.objectquery.generic.OrderType;
 import org.objectquery.generic.ProjectionType;
-import org.objectquery.jpa.JPAObjectQuery;
 import org.objectquery.jpa.domain.Home;
 import org.objectquery.jpa.domain.Person;
 
