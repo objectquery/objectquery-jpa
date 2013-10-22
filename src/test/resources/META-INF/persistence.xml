@@ -9,6 +9,7 @@
 		<class>org.objectquery.jpa.domain.Dog</class>
 		<class>org.objectquery.jpa.domain.Home</class>
 		<class>org.objectquery.jpa.domain.Person</class>
+		<class>org.objectquery.jpa.domain.Other</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:mem:testdb" />

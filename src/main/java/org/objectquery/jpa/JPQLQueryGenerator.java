@@ -42,8 +42,7 @@ public class JPQLQueryGenerator {
 			break;
 
 		case INSERT:
-			buildInsert(baseQuery.getTargetClass(), builder);
-			break;
+			throw new ObjectQueryException("Insert Query are not supported by the jpql standard");
 
 		case UPDATE:
 			buildUpdate(baseQuery.getTargetClass(), builder);
@@ -55,25 +54,6 @@ public class JPQLQueryGenerator {
 
 	}
 
-	private void buildInsert(Class<?> targetClass, GenericInternalQueryBuilder query) {
-		StringBuilder builder = new StringBuilder();
-		builder.append("insert into ").append(targetClass.getName()).append(" (");
-		StringBuilder values = new StringBuilder(")values(");
-		if (!query.getSets().isEmpty()) {
-			Iterator<SetValue> iter = query.getSets().iterator();
-			while (iter.hasNext()) {
-				SetValue set = iter.next();
-				buildName(set.getTarget(), builder);
-				values.append(":").append(buildParameterName(set.getTarget(), set.getValue()));
-				if (iter.hasNext()) {
-					builder.append(",");
-					values.append(",");
-				}
-			}
-		}
-		this.query = builder.append(values).append(")").toString();
-	}
-
 	private void buildUpdate(Class<?> targetClass, GenericInternalQueryBuilder query) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("update ").append(targetClass.getName()).append(" set ");
@@ -81,6 +61,9 @@ public class JPQLQueryGenerator {
 			Iterator<SetValue> iter = query.getSets().iterator();
 			while (iter.hasNext()) {
 				SetValue set = iter.next();
+				if (set.getTarget().getParent().getParent() != null) {
+					throw new ObjectQueryException("nested property update not supported by JPQL");
+				}
 				buildName(set.getTarget(), builder);
 				builder.append(" = ").append(":").append(buildParameterName(set.getTarget(), set.getValue()));
 				if (iter.hasNext())
