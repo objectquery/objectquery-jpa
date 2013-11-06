@@ -8,7 +8,7 @@ import javax.persistence.Query;
 import org.objectquery.BaseQuery;
 import org.objectquery.DeleteQuery;
 import org.objectquery.InsertQuery;
-import org.objectquery.ObjectQuery;
+import org.objectquery.SelectQuery;
 import org.objectquery.UpdateQuery;
 import org.objectquery.generic.GenericBaseQuery;
 import org.objectquery.generic.ObjectQueryException;
@@ -31,7 +31,7 @@ public class JPAObjectQuery {
 		return qu;
 	}
 
-	public static Object execute(ObjectQuery<?> objectQuery, EntityManager entityManager) {
+	public static Object execute(SelectQuery<?> objectQuery, EntityManager entityManager) {
 		return buildQuery(objectQuery, entityManager).getResultList();
 	}
 
