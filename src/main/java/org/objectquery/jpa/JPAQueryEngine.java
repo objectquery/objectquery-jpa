@@ -12,28 +12,25 @@ import org.objectquery.UpdateQuery;
 
 public class JPAQueryEngine extends QueryEngine<EntityManager> {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <RET extends List<?>> RET execute(SelectQuery<?> query, EntityManager engineSession) {
-		// TODO Auto-generated method stub
-		return null;
+		return (RET) JPAObjectQuery.execute(query, engineSession);
 	}
 
 	@Override
 	public int execute(DeleteQuery<?> dq, EntityManager engineSession) {
-		// TODO Auto-generated method stub
-		return 0;
+		return JPAObjectQuery.execute(dq, engineSession);
 	}
 
 	@Override
 	public boolean execute(InsertQuery<?> ip, EntityManager engineSession) {
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException("JPA Query Engine doesn't support insert query");
 	}
 
 	@Override
 	public int execute(UpdateQuery<?> query, EntityManager engineSession) {
-		// TODO Auto-generated method stub
-		return 0;
+		return JPAObjectQuery.execute(query, engineSession);
 	}
 
 }

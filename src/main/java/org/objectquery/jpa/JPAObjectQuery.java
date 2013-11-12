@@ -1,5 +1,6 @@
 package org.objectquery.jpa;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -7,7 +8,6 @@ import javax.persistence.Query;
 
 import org.objectquery.BaseQuery;
 import org.objectquery.DeleteQuery;
-import org.objectquery.InsertQuery;
 import org.objectquery.SelectQuery;
 import org.objectquery.UpdateQuery;
 import org.objectquery.generic.GenericBaseQuery;
@@ -31,16 +31,12 @@ public class JPAObjectQuery {
 		return qu;
 	}
 
-	public static Object execute(SelectQuery<?> objectQuery, EntityManager entityManager) {
+	public static List<?> execute(SelectQuery<?> objectQuery, EntityManager entityManager) {
 		return buildQuery(objectQuery, entityManager).getResultList();
 	}
 
 	public static int execute(DeleteQuery<?> dq, EntityManager entityManager) {
 		return buildQuery(dq, entityManager).executeUpdate();
-	}
-
-	public static int execute(InsertQuery<?> ip, EntityManager entityManager) {
-		return buildQuery(ip, entityManager).executeUpdate();
 	}
 
 	public static int execute(UpdateQuery<?> query, EntityManager entityManager) {

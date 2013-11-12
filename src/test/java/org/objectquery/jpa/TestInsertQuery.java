@@ -24,7 +24,7 @@ public class TestInsertQuery {
 	public void testSimpleInsert() {
 		InsertQuery<Person> ip = new GenericInsertQuery<Person>(Person.class);
 		ip.set(ip.target().getName(), "test");
-		JPAObjectQuery.execute(ip, entityManager);
+		JPAObjectQuery.buildQuery(ip, entityManager);
 	}
 
 	@After
