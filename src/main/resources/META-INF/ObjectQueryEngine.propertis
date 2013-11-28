@@ -1,1 +1,2 @@
 org.objectquery.QueryEngine = org.objectquery.jpa.JPAQueryEngine
+javax.persistence.EntityManager = org.objectquery.jpa.JPAQueryEngine
