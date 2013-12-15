@@ -26,7 +26,7 @@ public class TestDeleteQuery {
 	public void testSimpleDelete() {
 		Other ot = new Other();
 		ot.setText("text");
-		entityManager.persist(ot);
+		entityManager.merge(ot);
 		DeleteQuery<Other> dq = new GenericeDeleteQuery<Other>(Other.class);
 		int deleted = JPAObjectQuery.execute(dq, entityManager);
 		Assert.assertTrue(deleted != 0);
