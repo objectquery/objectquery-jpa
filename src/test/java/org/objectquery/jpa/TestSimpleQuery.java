@@ -17,7 +17,7 @@ public class TestSimpleQuery {
 	@Test
 	public void testBaseCondition() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getName(), "tom");
 
@@ -28,72 +28,72 @@ public class TestSimpleQuery {
 	@Test
 	public void testDupliedPath() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getName(), "tom");
 		qp.eq(target.getName(), "tom3");
 
-		Assert.assertEquals("select A from org.objectquery.jpa.domain.Person A where A.name  =  :A_name AND A.name  =  :A_name1", JPAObjectQuery
-				.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select A from org.objectquery.jpa.domain.Person A where A.name  =  :A_name AND A.name  =  :A_name1",
+				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
 
 	@Test
 	public void testDottedPath() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getDog().getName(), "tom");
 		qp.eq(target.getDud().getName(), "tom3");
 
-		Assert.assertEquals("select A from org.objectquery.jpa.domain.Person A where A.dog.name  =  :A_dog_name AND A.dud.name  =  :A_dud_name",
-				JPAObjectQuery.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select A from org.objectquery.jpa.domain.Person A where A.dog.name  =  :A_dog_name AND A.dud.name  =  :A_dud_name", JPAObjectQuery
+				.jpqlGenerator(qp).getQuery());
 
 	}
 
 	@Test
 	public void testProjection() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.prj(target.getName());
 		qp.eq(target.getDog().getName(), "tom");
 
-		Assert.assertEquals("select A.name from org.objectquery.jpa.domain.Person A where A.dog.name  =  :A_dog_name", JPAObjectQuery
-				.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select A.name from org.objectquery.jpa.domain.Person A where A.dog.name  =  :A_dog_name", JPAObjectQuery.jpqlGenerator(qp)
+				.getQuery());
 
 	}
 
 	@Test
 	public void testProjectionCountThis() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.prj(target, ProjectionType.COUNT);
 		qp.eq(target.getDog().getName(), "tom");
 
-		Assert.assertEquals("select  COUNT(A) from org.objectquery.jpa.domain.Person A where A.dog.name  =  :A_dog_name", JPAObjectQuery
-				.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select  COUNT(A) from org.objectquery.jpa.domain.Person A where A.dog.name  =  :A_dog_name", JPAObjectQuery.jpqlGenerator(qp)
+				.getQuery());
 
 	}
 
 	@Test
 	public void testSelectOrder() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName());
 
-		Assert.assertEquals("select A from org.objectquery.jpa.domain.Person A where A.dog.name  =  :A_dog_name order by A.name", JPAObjectQuery
-				.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select A from org.objectquery.jpa.domain.Person A where A.dog.name  =  :A_dog_name order by A.name",
+				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
 
 	@Test
 	public void testOrderAsc() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName(), OrderType.ASC);
@@ -106,7 +106,7 @@ public class TestSimpleQuery {
 	@Test
 	public void testOrderDesc() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getDog().getName(), "tom");
 		qp.order(target.getName(), OrderType.DESC);
@@ -120,7 +120,7 @@ public class TestSimpleQuery {
 	@Test
 	public void testOrderGrouping() {
 
-		GenericSelectQuery<Home> qp = new GenericSelectQuery<Home>(Home.class);
+		SelectQuery<Home> qp = new GenericSelectQuery<Home, Object>(Home.class);
 		Home target = qp.target();
 		qp.eq(target.getAddress(), "homeless");
 		qp.order(qp.box(target.getPrice()), ProjectionType.COUNT, OrderType.ASC);
@@ -133,14 +133,13 @@ public class TestSimpleQuery {
 	@Test
 	public void testOrderGroupingPrj() {
 
-		GenericSelectQuery<Home> qp = new GenericSelectQuery<Home>(Home.class);
+		SelectQuery<Home> qp = new GenericSelectQuery<Home, Object>(Home.class);
 		Home target = qp.target();
 		qp.prj(target.getAddress());
 		qp.prj(qp.box(target.getPrice()), ProjectionType.COUNT);
 		qp.order(qp.box(target.getPrice()), ProjectionType.COUNT, OrderType.ASC);
 
-		Assert.assertEquals(
-				"select A.address, COUNT(A.price) from org.objectquery.jpa.domain.Home A group by A.address order by  COUNT(A.price) ASC",
+		Assert.assertEquals("select A.address, COUNT(A.price) from org.objectquery.jpa.domain.Home A group by A.address order by  COUNT(A.price) ASC",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
@@ -148,7 +147,7 @@ public class TestSimpleQuery {
 	@Test
 	public void testAllSimpleConditions() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		qp.eq(target.getName(), "tom");
 		qp.like(target.getName(), "tom");
@@ -170,21 +169,21 @@ public class TestSimpleQuery {
 	@Test
 	public void testINCondition() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		List<String> pars = new ArrayList<String>();
 		qp.in(target.getName(), pars);
 		qp.notIn(target.getName(), pars);
 
-		Assert.assertEquals("select A from org.objectquery.jpa.domain.Person A where A.name  in  (:A_name) AND A.name  not in  (:A_name1)",
-				JPAObjectQuery.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select A from org.objectquery.jpa.domain.Person A where A.name  in  (:A_name) AND A.name  not in  (:A_name1)", JPAObjectQuery
+				.jpqlGenerator(qp).getQuery());
 
 	}
 
 	@Test
 	public void testContainsCondition() {
 
-		GenericSelectQuery<Person> qp = new GenericSelectQuery<Person>(Person.class);
+		GenericSelectQuery<Person, Object> qp = new GenericSelectQuery<Person, Object>(Person.class);
 		Person target = qp.target();
 		Person p = new Person();
 		qp.contains(target.getFriends(), p);
@@ -199,40 +198,41 @@ public class TestSimpleQuery {
 	@Test
 	public void testProjectionGroup() {
 
-		SelectQuery<Home> qp = new GenericSelectQuery<Home>(Home.class);
+		SelectQuery<Home> qp = new GenericSelectQuery<Home, Object>(Home.class);
 		Home target = qp.target();
 		qp.prj(target.getAddress());
 		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
 		qp.order(target.getAddress());
 
-		Assert.assertEquals("select A.address, MAX(A.price) from org.objectquery.jpa.domain.Home A group by A.address order by A.address",
-				JPAObjectQuery.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select A.address, MAX(A.price) from org.objectquery.jpa.domain.Home A group by A.address order by A.address", JPAObjectQuery
+				.jpqlGenerator(qp).getQuery());
 
 	}
 
 	@Test
 	public void testProjectionGroupHaving() {
 
-		SelectQuery<Home> qp = new GenericSelectQuery<Home>(Home.class);
+		SelectQuery<Home> qp = new GenericSelectQuery<Home, Object>(Home.class);
 		Home target = qp.target();
 		qp.prj(target.getAddress());
 		qp.prj(qp.box(target.getPrice()), ProjectionType.MAX);
 		qp.order(target.getAddress());
 		qp.having(qp.box(target.getPrice()), ProjectionType.MAX).eq(0D);
 
-		Assert.assertEquals("select A.address, MAX(A.price) from org.objectquery.jpa.domain.Home A group by A.address having MAX(A.price) = :A_price order by A.address",
+		Assert.assertEquals(
+				"select A.address, MAX(A.price) from org.objectquery.jpa.domain.Home A group by A.address having MAX(A.price) = :A_price order by A.address",
 				JPAObjectQuery.jpqlGenerator(qp).getQuery());
 
 	}
 
 	@Test
 	public void testBetweenCondition() {
-		SelectQuery<Home> qp = new GenericSelectQuery<Home>(Home.class);
+		SelectQuery<Home> qp = new GenericSelectQuery<Home, Object>(Home.class);
 		Home target = qp.target();
 		qp.between(qp.box(target.getPrice()), 20D, 30D);
 
-		Assert.assertEquals("select A from org.objectquery.jpa.domain.Home A where A.price  BETWEEN  :A_price AND :A_price1 ", JPAObjectQuery
-				.jpqlGenerator(qp).getQuery());
+		Assert.assertEquals("select A from org.objectquery.jpa.domain.Home A where A.price  BETWEEN  :A_price AND :A_price1 ", JPAObjectQuery.jpqlGenerator(qp)
+				.getQuery());
 
 	}
 }
