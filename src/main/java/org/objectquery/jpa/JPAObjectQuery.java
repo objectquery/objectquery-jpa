@@ -8,7 +8,8 @@ import javax.persistence.Query;
 
 import org.objectquery.BaseQuery;
 import org.objectquery.DeleteQuery;
-import org.objectquery.BaseSelectQuery;
+import org.objectquery.SelectMapQuery;
+import org.objectquery.SelectQuery;
 import org.objectquery.UpdateQuery;
 import org.objectquery.generic.GenericBaseQuery;
 import org.objectquery.generic.ObjectQueryException;
@@ -31,8 +32,15 @@ public class JPAObjectQuery {
 		return qu;
 	}
 
-	public static List<?> execute(BaseSelectQuery<?> objectQuery, EntityManager entityManager) {
+	public static List<?> execute(SelectQuery<?> objectQuery, EntityManager entityManager) {
 		return buildQuery(objectQuery, entityManager).getResultList();
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <RET extends List<M>, M> RET execute(SelectMapQuery<?, M> objectQuery, EntityManager entityManager) {
+		Query query = buildQuery(objectQuery, entityManager);
+		// query.get
+		return (RET) query.getResultList();
 	}
 
 	public static int execute(DeleteQuery<?> dq, EntityManager entityManager) {

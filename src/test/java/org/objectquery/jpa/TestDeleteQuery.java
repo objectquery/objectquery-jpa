@@ -1,8 +1,9 @@
 package org.objectquery.jpa;
 
-import javax.persistence.EntityManager;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import junit.framework.Assert;
+import javax.persistence.EntityManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,7 +30,7 @@ public class TestDeleteQuery {
 		entityManager.merge(ot);
 		DeleteQuery<Other> dq = new GenericeDeleteQuery<Other>(Other.class);
 		int deleted = JPAObjectQuery.execute(dq, entityManager);
-		Assert.assertTrue(deleted != 0);
+		assertTrue(deleted != 0);
 
 	}
 
@@ -37,7 +38,7 @@ public class TestDeleteQuery {
 	public void testSimpleDeleteGen() {
 		DeleteQuery<Person> dq = new GenericeDeleteQuery<Person>(Person.class);
 		JPQLQueryGenerator q = JPAObjectQuery.jpqlGenerator(dq);
-		Assert.assertEquals("delete org.objectquery.jpa.domain.Person ", q.getQuery());
+		assertEquals("delete org.objectquery.jpa.domain.Person ", q.getQuery());
 	}
 
 	@Test
@@ -49,7 +50,7 @@ public class TestDeleteQuery {
 		DeleteQuery<Person> dq = new GenericeDeleteQuery<Person>(Person.class);
 		dq.eq(dq.target().getName(), "to-delete");
 		int deleted = JPAObjectQuery.execute(dq, entityManager);
-		Assert.assertTrue(deleted != 0);
+		assertTrue(deleted != 0);
 	}
 
 	@Test
@@ -58,7 +59,7 @@ public class TestDeleteQuery {
 		DeleteQuery<Person> dq = new GenericeDeleteQuery<Person>(Person.class);
 		dq.eq(dq.target().getName(), "to-delete");
 		JPQLQueryGenerator q = JPAObjectQuery.jpqlGenerator(dq);
-		Assert.assertEquals("delete org.objectquery.jpa.domain.Person  where name  =  :name", q.getQuery());
+		assertEquals("delete org.objectquery.jpa.domain.Person  where name  =  :name", q.getQuery());
 	}
 
 	@After

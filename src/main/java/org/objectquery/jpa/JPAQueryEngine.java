@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import org.objectquery.DeleteQuery;
 import org.objectquery.InsertQuery;
 import org.objectquery.QueryEngine;
+import org.objectquery.SelectMapQuery;
 import org.objectquery.SelectQuery;
 import org.objectquery.UpdateQuery;
 
@@ -33,4 +34,8 @@ public class JPAQueryEngine extends QueryEngine<EntityManager> {
 		return JPAObjectQuery.execute(query, engineSession);
 	}
 
+	@Override
+	public <RET extends List<M>, M> RET execute(SelectMapQuery<?, M> query, EntityManager engineSession) {
+		return JPAObjectQuery.execute(query, engineSession);
+	}
 }

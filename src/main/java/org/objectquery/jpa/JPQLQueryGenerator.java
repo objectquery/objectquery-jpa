@@ -35,7 +35,7 @@ public class JPQLQueryGenerator {
 			if (baseQuery.getRootPathItem().getName() == null || baseQuery.getRootPathItem().getName().isEmpty()) {
 				baseQuery.getRootPathItem().setName("A");
 			}
-			buildSelect(baseQuery.getTargetClass(), builder, ((GenericSelectQuery<?,?>) baseQuery).getJoins(), baseQuery.getRootPathItem().getName());
+			buildSelect(baseQuery.getTargetClass(), builder, ((GenericSelectQuery<?, ?>) baseQuery).getJoins(), baseQuery.getRootPathItem().getName());
 			break;
 		case DELETE:
 			buildDelete(baseQuery.getTargetClass(), builder);
@@ -193,8 +193,8 @@ public class JPQLQueryGenerator {
 	private void conditionValue(ConditionItem cond, StringBuilder sb) {
 		if (cond.getValue() instanceof PathItem) {
 			buildName((PathItem) cond.getValue(), sb);
-		} else if (cond.getValue() instanceof GenericSelectQuery<?,?>) {
-			buildSubquery(sb, (GenericSelectQuery<?,?>) cond.getValue());
+		} else if (cond.getValue() instanceof GenericSelectQuery<?, ?>) {
+			buildSubquery(sb, (GenericSelectQuery<?, ?>) cond.getValue());
 		} else {
 			sb.append(":");
 			sb.append(buildParameterName(cond.getItem(), cond.getValue()));
@@ -354,7 +354,7 @@ public class JPQLQueryGenerator {
 		return "";
 	}
 
-	private void buildSubquery(StringBuilder builder, GenericSelectQuery<?,?> goq) {
+	private void buildSubquery(StringBuilder builder, GenericSelectQuery<?, ?> goq) {
 		builder.append("(");
 		buildQueryString(goq.getTargetClass(), (GenericInternalQueryBuilder) goq.getBuilder(), goq.getJoins(), builder, goq.getRootPathItem().getName());
 		builder.append(")");

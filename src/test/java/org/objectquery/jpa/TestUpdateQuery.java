@@ -1,8 +1,8 @@
 package org.objectquery.jpa;
 
-import javax.persistence.EntityManager;
+import static org.junit.Assert.assertEquals;
 
-import junit.framework.Assert;
+import javax.persistence.EntityManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -35,7 +35,7 @@ public class TestUpdateQuery {
 		query.eq(query.target().getText(), "old-address");
 
 		int res = JPAObjectQuery.execute(query, entityManager);
-		Assert.assertEquals(1, res);
+		assertEquals(1, res);
 	}
 
 	@Test
@@ -44,7 +44,7 @@ public class TestUpdateQuery {
 		query.set(query.target().getAddress(), "new-address");
 		query.eq(query.target().getAddress(), "old-address");
 		JPQLQueryGenerator q = JPAObjectQuery.jpqlGenerator(query);
-		Assert.assertEquals("update org.objectquery.jpa.domain.Home set address = :address where address  =  :address1", q.getQuery());
+		assertEquals("update org.objectquery.jpa.domain.Home set address = :address where address  =  :address1", q.getQuery());
 	}
 
 	@Test(expected = ObjectQueryException.class)
@@ -75,7 +75,7 @@ public class TestUpdateQuery {
 		query.set(query.box(query.target().getPrice()), 1d);
 		query.eq(query.target().getText(), "2old-address");
 		int res = JPAObjectQuery.execute(query, entityManager);
-		Assert.assertEquals(1, res);
+		assertEquals(1, res);
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class TestUpdateQuery {
 		query.eq(query.target().getAddress(), "old-address");
 
 		JPQLQueryGenerator q = JPAObjectQuery.jpqlGenerator(query);
-		Assert.assertEquals("update org.objectquery.jpa.domain.Home set address = :address,price = :price where address  =  :address1", q.getQuery());
+		assertEquals("update org.objectquery.jpa.domain.Home set address = :address,price = :price where address  =  :address1", q.getQuery());
 	}
 
 	@After
