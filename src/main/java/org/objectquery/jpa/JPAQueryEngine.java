@@ -13,10 +13,9 @@ import org.objectquery.UpdateQuery;
 
 public class JPAQueryEngine extends QueryEngine<EntityManager> {
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <RET extends List<?>> RET execute(SelectQuery<?> query, EntityManager engineSession) {
-		return (RET) JPAObjectQuery.execute(query, engineSession);
+	public List<?> execute(SelectQuery<?> query, EntityManager engineSession) {
+		return JPAObjectQuery.execute(query, engineSession);
 	}
 
 	@Override
@@ -35,7 +34,7 @@ public class JPAQueryEngine extends QueryEngine<EntityManager> {
 	}
 
 	@Override
-	public <RET extends List<M>, M> RET execute(SelectMapQuery<?, M> query, EntityManager engineSession) {
+	public <M> List<M> execute(SelectMapQuery<?, M> query, EntityManager engineSession) {
 		return JPAObjectQuery.execute(query, engineSession);
 	}
 }

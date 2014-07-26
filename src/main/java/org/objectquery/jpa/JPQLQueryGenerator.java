@@ -252,6 +252,12 @@ public class JPQLQueryGenerator {
 					throw new ObjectQueryException("unsupported subquery in the projection by JPA datastore");
 				if (proj.getType() != null)
 					builder.append(")");
+
+				if (proj.getMapper() != null) {
+					builder.append(" as ");
+					GenericInternalQueryBuilder.buildAlias(proj, builder);
+				}
+
 				if (projections.hasNext())
 					builder.append(",");
 			}

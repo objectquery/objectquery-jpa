@@ -1,5 +1,7 @@
 package org.objectquery.jpa;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +14,10 @@ import org.objectquery.SelectMapQuery;
 import org.objectquery.SelectQuery;
 import org.objectquery.UpdateQuery;
 import org.objectquery.generic.GenericBaseQuery;
+import org.objectquery.generic.GenericInternalQueryBuilder;
+import org.objectquery.generic.GenericSelectQuery;
 import org.objectquery.generic.ObjectQueryException;
+import org.objectquery.generic.Projection;
 
 public class JPAObjectQuery {
 
@@ -37,10 +42,27 @@ public class JPAObjectQuery {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <RET extends List<M>, M> RET execute(SelectMapQuery<?, M> objectQuery, EntityManager entityManager) {
+	public static <M> List<M> execute(SelectMapQuery<?, M> objectQuery, EntityManager entityManager) {
 		Query query = buildQuery(objectQuery, entityManager);
-		// query.get
-		return (RET) query.getResultList();
+		GenericSelectQuery<?, M> gq = (GenericSelectQuery<?, M>) objectQuery;
+		List<Projection> projections = ((GenericInternalQueryBuilder) gq.getBuilder()).getProjections();
+		List<M> result = new ArrayList<>();
+		if (projections.size() == 1) {
+			Projection prj = projections.get(0);
+			StringBuilder builder = new StringBuilder();
+			GenericInternalQueryBuilder.buildAlias(prj, builder);
+			String name = builder.toString();
+			Map<String, Object> values = new HashMap<String, Object>();
+			for (Object value : (List<Object>) query.getResultList()) {
+				values.put(name, value);
+				result.add(GenericInternalQueryBuilder.setMapping(gq.getMapperClass(), projections, values));
+			}
+		} else {
+			for (Map<String, Object> values : (List<Map<String, Object>>) query.getResultList()) {
+				result.add(GenericInternalQueryBuilder.setMapping(gq.getMapperClass(), projections, values));
+			}
+		}
+		return result;
 	}
 
 	public static int execute(DeleteQuery<?> dq, EntityManager entityManager) {
