@@ -58,7 +58,19 @@ public class JPAObjectQuery {
 				result.add(GenericInternalQueryBuilder.setMapping(gq.getMapperClass(), projections, values));
 			}
 		} else {
-			for (Map<String, Object> values : (List<Map<String, Object>>) query.getResultList()) {
+			List<String> names = new ArrayList<>();
+			StringBuilder builder = new StringBuilder();
+			for (Projection prj : projections) {
+				builder.setLength(0);
+				GenericInternalQueryBuilder.buildAlias(prj, builder);
+				names.add(builder.toString());
+			}
+			Map<String, Object> values = new HashMap<>();
+			for (Object[] val : (List<Object[]>) query.getResultList()) {
+				values.clear();
+				for (int i = 0; i < val.length; i++) {
+					values.put(names.get(i), val[i]);
+				}
 				result.add(GenericInternalQueryBuilder.setMapping(gq.getMapperClass(), projections, values));
 			}
 		}
